@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musikkhistorie — Interaktiv tidslinje</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e0c0a; --surface: #181612; --card: #1f1c18;
+    --border: rgba(255,255,255,0.07); --border-hover: rgba(255,255,255,0.14);
+    --text: #e8e3d8; --muted: #8a8578; --faint: #4a4640;
+    --hover-bg: #252118;
+  }
+  html.light {
+    --bg: #f7f5f2; --surface: #ffffff; --card: #ffffff;
+    --border: rgba(0,0,0,0.08); --border-hover: rgba(0,0,0,0.16);
+    --text: #1a1814; --muted: #6b6760; --faint: #b0ada8;
+    --hover-bg: #f0ede8;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+
+  header { padding: 3rem 2rem 2rem; max-width: 900px; margin: 0 auto; border-bottom: 0.5px solid var(--border); }
+  header .eyebrow { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; line-height: 1.15; color: var(--text); margin-bottom: 0.5rem; }
+  header h1 em { font-style: italic; color: #c8a96a; }
+  header p { color: var(--muted); font-size: 14px; max-width: 520px; font-weight: 300; }
+
+  .era-nav { max-width: 900px; margin: 0 auto; padding: 1.5rem 2rem 0; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+  .era-nav::-webkit-scrollbar { display: none; }
+  .era-tab { flex-shrink: 0; padding: 10px 18px; font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 400; color: var(--muted); background: none; border: none; border-bottom: 1.5px solid var(--faint); cursor: pointer; transition: all .2s; white-space: nowrap; letter-spacing: 0.02em; }
+  .era-tab:hover { color: var(--text); border-bottom-color: var(--border-hover); }
+  .era-tab.active { color: var(--text); font-weight: 500; border-bottom-width: 2px; }
+
+  main { max-width: 900px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+
+  .era-header { margin-bottom: 2rem; animation: fadeUp .25s ease both; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+  .years-badge { display: inline-block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; font-weight: 500; }
+  .era-header h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; line-height: 1.2; margin-bottom: 10px; }
+  .era-header .summary { font-size: 15px; color: var(--muted); max-width: 700px; line-height: 1.75; font-weight: 300; margin-bottom: 1.2rem; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+  .info-block { background: var(--card); border: 0.5px solid var(--border); border-radius: 10px; padding: 1.1rem 1.2rem; }
+  .info-block h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--faint); margin-bottom: 10px; }
+  .info-block ul { list-style: none; }
+  .info-block ul li { font-size: 13px; color: var(--muted); padding: 5px 0; border-bottom: 0.5px solid var(--border); line-height: 1.5; display: flex; gap: 8px; }
+  .info-block ul li:last-child { border-bottom: none; }
+  .info-block ul li::before { content: "–"; color: var(--faint); flex-shrink: 0; }
+
+  .section-divider { border: none; border-top: 0.5px solid var(--border); margin: 1.8rem 0 1.4rem; }
+  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--faint); margin-bottom: 1rem; }
+
+  .composer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin-bottom: 1.2rem; }
+  .composer-btn { background: var(--card); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px 16px; text-align: left; cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif; }
+  .composer-btn:hover { border-color: var(--border-hover); background: var(--hover-bg); transform: translateY(-1px); }
+  .composer-btn.active { border-width: 1.5px; }
+  .composer-btn .c-name { font-size: 14px; font-weight: 500; color: var(--text); display: block; margin-bottom: 2px; }
+  .composer-btn .c-years { font-size: 11px; color: var(--muted); }
+
+  .detail-panel { background: var(--surface); border: 0.5px solid var(--border-hover); border-radius: 12px; padding: 1.4rem 1.6rem; animation: fadeUp .2s ease both; margin-top: 1rem; }
+  .detail-panel .d-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .detail-panel .d-years { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .d-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--faint); margin-bottom: 6px; margin-top: 14px; }
+  .detail-panel .d-work { font-size: 14px; color: #c8a96a; font-style: italic; font-family: 'Playfair Display', serif; margin-bottom: 4px; }
+  .detail-panel .d-note { font-size: 14px; color: var(--muted); line-height: 1.75; font-weight: 300; }
+  .style-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .style-tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 0.5px solid var(--border-hover); color: var(--muted); }
+  .char-list { list-style: none; margin: 0; }
+  .char-list li { font-size: 13px; color: var(--muted); padding: 4px 0; border-bottom: 0.5px solid var(--border); display: flex; gap: 8px; line-height: 1.5; }
+  .char-list li:last-child { border-bottom: none; }
+  .char-list li::before { content: "–"; color: var(--faint); flex-shrink: 0; }
+  .yt-links { display: flex; flex-direction: column; gap: 6px; }
+  .yt-link { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; color: var(--muted); padding: 7px 10px; border-radius: 8px; border: 0.5px solid var(--border); transition: all .15s; background: var(--card); cursor: pointer; font-family: 'DM Sans', sans-serif; width: 100%; text-align: left; }
+  .yt-link:hover { border-color: var(--border-hover); color: var(--text); background: var(--hover-bg); }
+  .yt-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+  #view-bg { max-width: 900px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+  .bg-cats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 2rem; }
+  .bg-cat-btn { padding: 8px 16px; font-size: 12px; font-family: 'DM Sans', sans-serif; border: 0.5px solid var(--border); border-radius: 20px; background: var(--card); color: var(--muted); cursor: pointer; transition: all .2s; }
+  .bg-cat-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .bg-cat-btn.active { font-weight: 500; border-width: 1.5px; color: var(--text); }
+  .bg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .bg-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.2rem 1.4rem; cursor: pointer; transition: all .2s; }
+  .bg-card:hover { border-color: var(--border-hover); transform: translateY(-1px); }
+  .bg-card.open { border-width: 1.5px; }
+  .bg-card .bg-term { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .bg-card .bg-cat { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--faint); margin-bottom: 8px; }
+  .bg-card .bg-short { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .bg-card .bg-long { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--border); display: none; }
+  .bg-card.open .bg-long { display: block; }
+  .bg-card .bg-ex { margin-top: 8px; font-size: 12px; color: var(--faint); font-style: italic; }
+  footer { text-align: center; padding: 2rem; font-size: 12px; color: var(--faint); border-top: 0.5px solid var(--border); letter-spacing: 0.04em; }
+  @media (max-width: 600px) { header, main, .era-nav { padding-left: 1rem; padding-right: 1rem; } .composer-grid { grid-template-columns: 1fr 1fr; } }
+
+  .view-tabs { max-width: 900px; margin: 0 auto; padding: 0 2rem; display: flex; border-bottom: 0.5px solid var(--border); }
+  .view-tab { padding: 12px 24px; font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all .2s; letter-spacing: 0.02em; }
+  .view-tab:hover { color: var(--text); }
+  .view-tab.active { color: var(--text); font-weight: 500; border-bottom-color: var(--text); }
+
+  #view-qz { max-width: 900px; margin: 0 auto; padding: 2rem 2rem 4rem; display: grid; grid-template-columns: 180px 1fr; gap: 2rem; align-items: start; }
+  @media (max-width: 700px) { #view-qz { grid-template-columns: 1fr; } }
+  .qz-era-row { display: flex; flex-direction: column; gap: 6px; position: sticky; top: 120px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 1rem; }
+  @media (max-width: 700px) { .qz-era-row { flex-direction: row; flex-wrap: wrap; position: static; } }
+  .qz-era-btn { padding: 8px 16px; font-size: 12px; font-family: 'DM Sans', sans-serif; border: 0.5px solid var(--border); border-radius: 20px; background: var(--card); color: var(--muted); cursor: pointer; transition: all .2s; letter-spacing: 0.02em; }
+  .qz-era-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .qz-era-btn.active { font-weight: 500; border-width: 1.5px; }
+  .qz-header { margin-bottom: 1.5rem; animation: fadeUp .2s ease both; }
+  .qz-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
+  .qz-header p { font-size: 14px; color: var(--muted); font-weight: 300; }
+  .qz-progress { font-size: 11px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--faint); margin-bottom: 1.2rem; }
+  .qz-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.4rem 1.6rem; animation: fadeUp .2s ease both; }
+  .qz-q { font-size: 16px; color: var(--text); line-height: 1.65; margin-bottom: 1.2rem; font-weight: 400; }
+  .qz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 600px) { .qz-opts { grid-template-columns: 1fr; } }
+  .qz-opt { text-align: left; padding: 12px 16px; font-size: 14px; font-family: 'DM Sans', sans-serif; border: 0.5px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--muted); cursor: pointer; transition: all .15s; line-height: 1.4; }
+  .qz-opt:hover:not(.disabled) { border-color: var(--border-hover); color: var(--text); background: var(--hover-bg); }
+  .qz-opt.correct { background: rgba(62,207,142,0.12); border-color: #3ecf8e; color: #5de0a0; font-weight: 500; }
+  .qz-opt.wrong { background: rgba(232,83,74,0.12); border-color: #e8534a; color: #ee7870; }
+  .qz-opt.reveal { background: rgba(62,207,142,0.08); border-color: rgba(62,207,142,0.3); color: #5de0a0; }
+  .qz-opt.disabled { pointer-events: none; }
+  .qz-explain { margin-top: 1rem; font-size: 13px; line-height: 1.7; padding: 12px 14px; border-radius: 8px; font-weight: 300; }
+  .qz-explain.correct { background: rgba(62,207,142,0.08); color: #5de0a0; }
+  .qz-explain.wrong { background: rgba(232,83,74,0.08); color: #ee7870; }
+  .qz-next { margin-top: 10px; padding: 10px 22px; font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500; border: 0.5px solid var(--border-hover); border-radius: 8px; background: var(--surface); color: var(--text); cursor: pointer; transition: all .15s; }
+  .qz-next:hover { background: var(--hover-bg); }
+  .qz-result { text-align: center; padding: 3rem 1rem; }
+  .qz-result .score { font-family: 'Playfair Display', serif; font-size: 4rem; font-weight: 700; margin-bottom: 8px; }
+  .qz-result p { font-size: 15px; color: var(--muted); margin-bottom: 2rem; font-weight: 300; }
+  .qz-restart { padding: 11px 24px; font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500; border: 0.5px solid var(--border-hover); border-radius: 8px; background: var(--surface); color: var(--text); cursor: pointer; }
+  .qz-restart:hover { background: var(--hover-bg); }
+</style>
+</head>
+<body>
+<header>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div>
+      <div class="eyebrow">Musikkhistorie · Fra middelalder til i dag</div>
+      <h1>Vestlig<br><em>musikk­historie</em></h1>
+      <p>Utforsk epokene i <strong>Tidslinje</strong>-fanen, eller test deg selv i <strong>Quiz</strong>-fanen.</p>
+    </div>
+    <button id="theme-toggle" onclick="toggleTheme()" title="Bytt mellom lys og mørk modus" style="margin-top:0.5rem;padding:8px 14px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--card);border:0.5px solid var(--border);border-radius:20px;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;">☀ Lys modus</button>
+  </div>
+</header>
+<div class="view-tabs">
+  <button class="view-tab active" id="tab-tl" onclick="switchView('tl')">Tidslinje</button>
+  <button class="view-tab" id="tab-qz" onclick="switchView('qz')">Quiz</button>
+  <button class="view-tab" id="tab-bg" onclick="switchView('bg')">Begreper</button>
+</div>
+<div id="view-tl">
+  <nav class="era-nav" id="era-nav" aria-label="Velg epoke"></nav>
+  <main id="main-content" aria-live="polite"></main>
+</div>
+<div id="view-qz" style="display:none">
+  <div id="qz-era-row" class="qz-era-row"></div>
+  <div id="qz-body"></div>
+</div>
+<div id="view-bg" style="display:none">
+  <div id="bg-content"></div>
+</div>
+<footer>Musikkhistorie · Undervisningsressurs</footer>
+
+<script>
+const YT_ICON = `<svg class="yt-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="5" fill="#FF0000"/><path d="M19.6 7.8s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C14.4 4.8 12 4.8 12 4.8s-2.4 0-4.8.1c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S4.2 9.4 4.2 11v1.5c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.3.8C8.9 18.7 12 18.7 12 18.7s2.4 0 4.8-.2c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.2V11c0-1.6-.2-3.2-.2-3.2zm-11.3 6.5V9.7l5.4 2.3-5.4 2.3z" fill="white"/></svg>`;
+
+const eras = [
+  {
+    id: "medieval", label: "Middelalder", years: "500–1400",
+    accent: "#9d7aff", badgeBg: "rgba(157,122,255,0.12)", badgeText: "#b99aff",
+    summary: "Musikken i middelalderen var i all hovedsak kirkens musikk. Gregoriansk sang — enstemmig, latinsk og uten instrumenter — var standarden. Fra ca. 900 vokste flerstemmig sang (organum) frem. Mot 1300-tallet ble musikken mer bevegelig og rytmisk nyansert i det som kalles Ars Nova.",
+    styleTracks: [
+      { label: "Gregoriansk sang — stiltrekk", items: [
+        "Enstemmig (monofon), mannlig sang uten instrumenter",
+        "Latinsk, kirkelig tekst — liturgisk funksjon",
+        "Rytmen følger språkrytmen — fri rytmikk uten fast puls",
+        "Melodikken er mest trinnvis med lite omfang (litt over en oktav)",
+        "Kirketoneartene: dorisk, frygisk, lydisk, mixolydisk",
+        "Upersonlig og objektivt uttrykk — gudstjenestelig funksjon"
+      ]},
+      { label: "Historisk utvikling", items: [
+        "Ca. 600: Gregor den store standardiserer gregoriansk sang",
+        "Ca. 900: Organum — ny stemme i parallelle kvarter til gregorianikken",
+        "1100-t: Notre Dame-skolen i Paris (Ars Antiqua) — Pérotin",
+        "1300-t: Ars Nova — mer framdrift, todelt takt, nyansert rytmikk",
+        "Trubadurer (Sør-Frankrike), trouvères (Nord-Frankrike), minnesang (Tyskland)",
+        "Verdslig, dikterisk sangform — kjærlighetssanger dominerer"
+      ]}
+    ],
+    composers: [
+      {
+        name: "Hildegard von Bingen", years: "1098–1179",
+        work: "O Euchari · Ordo Virtutum",
+        note: "Den tidligste komponisten vi kjenner navnet på. Tok utgangspunkt i gregoriansk sang, men med noe større melodisk omfang, oftere og større sprang, og et mer uttrykksfull tonespråk. Abbedisse fra Rhinen — bemerkelsesverdig at en kvinne fikk kunstnerisk uttrykk i middelalderen.",
+        characteristics: [
+          "Fri, svevende melodikk med store sprang — mer uttrykksfullt enn vanlig gregoriansk sang",
+          "Teksten styrer melodiens form og rytme",
+          "Mystisk og andektig stemning — henvendt til det guddommelige",
+          "Monofon stil, men med større melodisk spenn enn standardgregorianikken"
+        ],
+        youtube: [
+          { title: "Hildegard von Bingen O Euchari in leta via" },
+          { title: "Hildegard von Bingen O Virtus Sapientiae" }
+        ]
+      },
+      {
+        name: "Pérotin", years: "ca. 1160–1220",
+        work: "Viderunt omnes · Alleluia nativitas",
+        note: "Fransk komponist og organist ved Notre-Dame-katedralen i Paris. Tilhørte Ars Antiqua-perioden. Verkene er i organumstil — det ble komponert over- og understemmer til en gregoriansk melodi. Den gregorianske melodien (tenor) har ekstremt lange noteverdier i bunnen.",
+        characteristics: [
+          "Opptil fire stemmer over en langstrakt gregoriansk melodi (tenor)",
+          "Øverste stemmer beveger seg raskere og mer ornamentert",
+          "Rytmiske mønstre (modalrytmikk) styrer de øvre stemmene",
+          "Kraftig, katedralaktig klang — komponert for Notre-Dame i Paris"
+        ],
+        youtube: [
+          { title: "Perotin Viderunt omnes Notre Dame organum" },
+          { title: "Perotin Alleluia nativitas organum" }
+        ]
+      },
+      {
+        name: "Guillaume de Machaut", years: "1300–1377",
+        work: "Messe de Nostre Dame · Ballader og virelais",
+        note: "Fransk komponist tilhørende Ars Nova-perioden ('Den nye kunsten'). Mer framdrift og bevegelse i musikken, mer nyansert rytmikk og todelt takt. Skrev antagelig den første gjennomkomponerte messen over alle ordinarieleddene — en cantus firmus-messe bygget på en gregoriansk melodi.",
+        characteristics: [
+          "Ars Nova: rytmisk frihet og framdrift — todelt takt innføres",
+          "Cantus firmus-teknikk: gregoriansk melodi i bunnen, frie stemmer over",
+          "Tre til fire stemmer i gjennomarbeidet polyfoni",
+          "Kombinerer sakral kirkemusikk med verdslige sanger og ballader"
+        ],
+        youtube: [
+          { title: "Machaut Messe de Nostre Dame Kyrie medieval polyphony" },
+          { title: "Machaut Douce dame jolie ballade medieval" }
+        ]
+      },
+      {
+        name: "Trubadurer og minnesangere", years: "ca. 1100–1350",
+        work: "Verdslig sangkunst — kjærlighetssanger",
+        note: "Verdslig, dikterisk sangform i middelalderen. Solosang med improvisert akkompagnement. Kjærlighetssanger dominerer — det dreier seg om såkalt høvisk kjærlighet. Sør-Frankrike: troubadour. Nord-Frankrike: trouvère (ofte fromme tekster). Tyskland: minnesang.",
+        characteristics: [
+          "Solosang med lett improvisert akkompagnement (lut, fele)",
+          "Verdslig tekst — kjærlighet, natur og ridderliv",
+          "Enstemmige melodier med tydelig tekstmelodi",
+          "Improvisatorisk og personlig uttrykk — kontrast til kirkens upersonlige stil"
+        ],
+        youtube: [
+          { title: "troubadour medieval music songs 12th century" },
+          { title: "Walther von der Vogelweide Palästinalied minnesang" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "renaissance", label: "Renessanse", years: "1400–1600",
+    accent: "#3ecf8e", badgeBg: "rgba(62,207,142,0.10)", badgeText: "#5de0a0",
+    summary: "Renessansen ('gjenfødelsen') hentet inspirasjon fra antikkens idealer og humanismen. Enkeltmenneskets verdi sto i sentrum. Vokalpolyfonien nådde sitt høydepunkt. Boktrykkerkunsten spredte musikk til et bredere publikum, og sekulær musikk vokste frem ved siden av kirkemusikken.",
+    styleTracks: [
+      { label: "Musikalske stiltrekk", items: [
+        "Vokalpolyfoni — det sentrale stilidealet",
+        "Fortsatt modal tonalitet, men med tonale innslag (eolisk og jonisk — forløpere for moll og dur)",
+        "Selvstendiggjøring av stemmene — imitasjonsteknikk",
+        "Treklangharmonikk — akkorder begynner å prege musikken",
+        "Dissonans og konsonans som spenningsskapende formelement",
+        "Klangfylde og velklang — dypere basstemme, kor i stedet for bare solister",
+        "Klarhet i uttrykket — balanse mellom form og fantasi"
+      ]},
+      { label: "Historisk kontekst", items: [
+        "Flandern: 'Den flamske skolen' — europeisk musikksenter",
+        "Humanismen: enkeltmenneskets verdi og muligheter",
+        "Luther og reformasjonen endret kirkemusikken — protestantisk salme",
+        "Boktrykkerkunsten (Gutenberg): notesamlinger spres, musikk i hjemmet",
+        "Italia som kunstnerisk sentrum — Michelangelo, da Vinci, Rafael",
+        "Madrigalet — sekulær vokalform, særlig populær i Italia og England"
+      ]}
+    ],
+    composers: [
+      {
+        name: "Josquin des Prez", years: "ca. 1440–1521",
+        work: "Ave Maria · Missa Pange lingua · De profundis",
+        note: "Betraktet av samtidige som renessansens fremste komponist. Martin Luther kalte ham 'notenes mester'. Tilhørte den flamske skolen. Kombinerte teknisk virtuositet med dyptgripende uttrykk og hadde enorm innflytelse på europeisk musikk.",
+        characteristics: [
+          "Imitasjonspolyfoni: stemmene etteraper hverandre med samme motiv",
+          "Fire til fem stemmer i jevn, flytende bevegelse",
+          "Tydelig tekstbehandling — musikken understreker ordenes mening",
+          "Balanse mellom streng kontrapunktisk teknikk og emosjonelt uttrykk"
+        ],
+        youtube: [
+          { title: "Josquin des Prez Ave Maria virgo serena polyphony" },
+          { title: "Josquin Missa Pange lingua Kyrie renaissance" }
+        ]
+      },
+      {
+        name: "Giovanni Palestrina", years: "ca. 1525–1594",
+        work: "Missa Papae Marcelli · Stabat Mater · Motetter",
+        note: "Ble legenden som 'reddet' kirkemusikken under Tridentkonsilet (1545–63). Hans glatte og flytende kontrapunkt med mest trinnvis melodikk ble i århundrer lærebokstandarden for polyfoni. Klarhet i teksten og vokal velklang var idealet.",
+        characteristics: [
+          "Trinnvis, glatt kontrapunkt — unngår brå sprang og harde dissonanser",
+          "Fire til seks stemmer i jevnt flytende polyfoni",
+          "Dissonanser forberedes og løses alltid forsiktig (legatostil)",
+          "Teksten er alltid tydelig — ingen lang vokalornamentikk over én stavelse"
+        ],
+        youtube: [
+          { title: "Palestrina Missa Papae Marcelli Kyrie polyphony" },
+          { title: "Palestrina Stabat Mater renaissance sacred" }
+        ]
+      },
+      {
+        name: "Claudio Monteverdi", years: "1567–1643",
+        work: "L'Orfeo (1607) · Vespro della Beata Vergine · Madrigaler",
+        note: "Bro mellom renessanse og barokk. L'Orfeo fra 1607 er den eldste operaen som fortsatt settes opp regelmessig. Monodiens idé: individets følelser uttrykkes lettest i én enkeltstemme. Affektprinsippet: instrumenter brukes for å angi grunnstemningen i et avsnitt.",
+        characteristics: [
+          "Monodi: solosang med generalbass-akkompagnement — enkeltpersonen i fokus",
+          "Affektlære: ulike instrumenter brukes bevisst for å skape bestemte følelser",
+          "Overgang fra modal til tonal harmonikk",
+          "Dramatisk kontrast mellom resitativ (fri, talende sang) og arie (melodisk, fastere form)"
+        ],
+        youtube: [
+          { title: "Monteverdi L'Orfeo Tu se morta lamento" },
+          { title: "Monteverdi L'Orfeo Toccata Prologue opera" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "baroque", label: "Barokk", years: "1600–1750",
+    accent: "#f0a033", badgeBg: "rgba(240,160,51,0.10)", badgeText: "#f5bc60",
+    summary: "Barokk betyr 'detaljrikt, rikt utsmykket, overdådig' — et begrep opprinnelig fra arkitektur og billedkunst. Subjektiviteten brøt gjennom i musikken. Operaen ble oppfunnet rundt 1600. Generalbass (basso continuo) og dur/moll-systemet slo gjennom. Musikk for aristokratiet med virtuose utøvere.",
+    styleTracks: [
+      { label: "Musikalske stiltrekk", items: [
+        "Generalbass (basso continuo): akkompagnerende basslinje med besifring (tall over bassnotene angir akkorder)",
+        "Dur/moll-tonalitet etableres fullt ut",
+        "Opera: ny scenisk form med monodi, resitativ og arie",
+        "Affektlære: musikken uttrykker én grunnfølelse per avsnitt",
+        "Kontrapunkt og ornamentikk",
+        "Tydelige kontraster: forte/piano, solo/tutti (concerto grosso)"
+      ]},
+      { label: "Viktige former og sjangre", items: [
+        "Opera: scenisk form med sang og orkester — fra L'Orfeo (1607)",
+        "Oratorium: som opera, men uten scenisk fremføring — bibelske historier",
+        "Kantate: for kirken — solister, kor, orgel, orkester — korsatser, resitativer og arier",
+        "Konsert og concerto grosso: solist(er) mot orkester",
+        "Suite, sonate, fuge og passjon"
+      ]}
+    ],
+    composers: [
+      {
+        name: "Johann Sebastian Bach", years: "1685–1750",
+        work: "Matteuspasjonen · Das Wohltemperierte Klavier · Brandenburgkonsertene · Kantater",
+        note: "Ansett som en av tidenes største komponister. Brakte ulike stilarter, teknikker og nasjonale særtrekk til en unik syntese. Berømt i sin samtid som organist og cembalist. Bachs komposisjoner viser den høyeste grad av teknisk beherskelse innen kontrapunktikk og harmonikk. Hadde kirken som arbeidsgiver og komponerte ca. 300 kirkekantater.",
+        characteristics: [
+          "Kontrapunktets mester — fugaer med opptil fem stemmer i perfekt balanse",
+          "Syntese av tysk, fransk og italiensk barokkstil",
+          "Koralmelodier brukes som bærende materiale i kantater og pasjoner",
+          "Enorm harmonisk dristighet — modulerer til fjerne tonearter og tilbake",
+          "Kantatestruktur: bibeltekst → korsats → resitativ → arie → koral"
+        ],
+        youtube: [
+          { title: "Bach St Matthew Passion Erbarme dich aria" },
+          { title: "Bach Brandenburg Concerto No 5 D major first movement" },
+          { title: "Bach Toccata and Fugue D minor BWV 565 organ" }
+        ]
+      },
+      {
+        name: "Georg Friedrich Händel", years: "1685–1759",
+        work: "Messiah · Rinaldo · Water Music · Music for the Royal Fireworks",
+        note: "En av de viktigste komponistene i sen-barokken ved siden av Bach. Oppnår stor virkning med enkle virkemidler. Populær appell — da og nå. Musikken er mer vokal i karakter enn Bachs, med større sangbarhet i tematikken. Messiah er sammensatt av ulike bibelske tekster og er et av musikkhistoriens mest fremførte verk.",
+        characteristics: [
+          "Sangbar, melodisk tematikk med umiddelbar appell",
+          "Dramatiske og mektige korpartier (f.eks. Hallelujah-koret)",
+          "Tydelig kontrast mellom resitativ, arie og kor",
+          "Utendørs-orkestersuiter med høytidelig og festlig karakter",
+          "Enklere kontrapunkt enn Bach — mer fokus på melodi og virkning"
+        ],
+        youtube: [
+          { title: "Handel Messiah Hallelujah chorus full" },
+          { title: "Handel Messiah He was despised and rejected aria" },
+          { title: "Handel Water Music Suite 2 Hornpipe orchestra" }
+        ]
+      },
+      {
+        name: "Antonio Vivaldi", years: "1678–1741",
+        work: "Le quattro stagioni (Årstidene) · Solokonserter for fiolin, fløyte, cello",
+        note: "Italiensk komponist, født i Venezia og utdannet prest. Musikken er preget av lekenhet, overskudd og energi. Utadvendt og populær stil. Mest kjent for hundrevis av konserter for ulike instrumenter. Påvirket Bach sterkt. En barokkstil med klarhet som peker framover mot klassisk stil.",
+        characteristics: [
+          "Tydelig ritornellform: orkesteret binder satsen sammen med et tilbakevendende tema",
+          "Programmusikk: musikken beskriver konkrete bilder fra naturen (vår, sommer, høst, vinter)",
+          "Energisk og rytmisk driv — staccato-figurer og repetitive mønstre",
+          "Solist i fokus — virtuose løp og ekspressivt uttrykk i langsom sats",
+          "Rask–langsom–rask tresatsstruktur i konsertene"
+        ],
+        youtube: [
+          { title: "Vivaldi Four Seasons Spring La Primavera allegro violin" },
+          { title: "Vivaldi Four Seasons Winter L'Inverno Largo" }
+        ]
+      },
+      {
+        name: "Claudio Monteverdi", years: "1567–1643",
+        work: "L'Orfeo (1607)",
+        note: "Regnes som operaens far. L'Orfeo er den tidligste operaen som fortsatt oppføres jevnlig. Brukte instrumenter bevisst for å angi grunnstemningen — affektprinsippet. Broen mellom renessansen og barokken.",
+        characteristics: [
+          "Operaens far — kombinerte musikk, tekst og scenisk handling",
+          "Affektlære: ulike instrumenter symboliserer ulike følelser og verdener",
+          "Overgang fra renessansens polyfoni til barokkens monodi",
+          "Toccata (festlig innledning), resitativer og arier veksler"
+        ],
+        youtube: [
+          { title: "Monteverdi L'Orfeo Possente spirto virtuoso aria" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "classical", label: "Wienerklassisisme", years: "1750–1820",
+    accent: "#5aabf5", badgeBg: "rgba(90,171,245,0.10)", badgeText: "#7fc0f8",
+    summary: "Etter Bachs død i 1750 skjer overgangen fra barokk til klassisk stil gradvis via rokokko og ekspressiv stil. Klassisk stil kjennetegnes av klarhet, balanse og homofon tekstur. Pianoet er det viktigste soloinstrumentet. Wien er musikkens verdensby med Haydn, Mozart og Beethoven.",
+    styleTracks: [
+      { label: "Klassiske stiltrekk", items: [
+        "Homofon tekstur: melodi + akkompagnement (ikke kontrapunkt som standard)",
+        "Periodisk form: symmetriske fraser — forsetning + ettersetning ('spørsmål og svar')",
+        "Sonatesats: eksposisjon (HT + ST) – gjennomføring – rekapitulasjon",
+        "Dualisme: kontrast mellom hovedtema (HT) og sidetema (ST)",
+        "Klarhet i form og avbalansert uttrykk",
+        "Pianoet erstatter cembaloen — mulighet for å gradere dynamikken (forte–piano)"
+      ]},
+      { label: "Viktige former", items: [
+        "Sonatesats (1. sats) — Haydn sentral i å utvikle formen",
+        "Langsom sats: ABA-form eller tema med variasjoner (2. sats)",
+        "Menuett og trio: A–B–A, sammensatt tredelt form (3. sats)",
+        "Rondo eller sonaterondo (4. sats)",
+        "Klassisk symfoni: fire satser — stort anlagt orkesterverk",
+        "Strykekvartett, klavertrio og annen kammermusikk"
+      ]}
+    ],
+    composers: [
+      {
+        name: "Joseph Haydn", years: "1732–1809",
+        work: "Symfoni nr. 94 («Surprise») · Trompetkonsert i Ess-dur · Creasjonen",
+        note: "'Symfoniens far' (107 symfonier) og 'strykekvartettens far' (75 strykekvartetter). Typisk Haydn-musikk: humor, energi, overskudd og underholdende uttrykk. Var sentral i å utforme sonatesatsformen og en mester i gjennomføringens kunst — musikalske ideer presenteres i ny drakt og utsettes for forvandlinger.",
+        characteristics: [
+          "Symmetrisk, periodisk melodikk — klare spørsmål-svar-fraser",
+          "Humor og overraskelser (f.eks. den plutselige fortissimo-akkorden i Surprise-symfonien)",
+          "Mester i gjennomføring: temaer fragmenteres, kombineres og transponeres",
+          "Noe påvirket av østerriksk folkemusikk og folkedans",
+          "Homofon tekstur med tydelig melodi over akkompagnement"
+        ],
+        youtube: [
+          { title: "Haydn Symphony No 94 Surprise second movement andante" },
+          { title: "Haydn Trumpet Concerto E flat major third movement rondo" }
+        ]
+      },
+      {
+        name: "Wolfgang Amadeus Mozart", years: "1756–1791",
+        work: "Symfoni nr. 40 · Klaverkonsert nr. 21 · Don Giovanni · Tryllefløyten · Requiem",
+        note: "Østerriksk komponist, født i Salzburg. Reiste mye som barn og fikk påvirkninger fra hele Europa. Klassiske idealer: klarhet, balanse og gjennomsiktighet — men med hyppige og gjerne dramatiske kontraster og et stort uttrykksregister. «Melodi er musikkens essens» (Mozart).",
+        characteristics: [
+          "Uovertruffen melodisk naturlighet — alltid sangbart, også i virtuose partier",
+          "Dynamiske kontraster: brå overganger mellom forte og piano",
+          "Harmonisk dristighet i sene verk — kromatikk og modulasjoner",
+          "I operaene: musikken karakteriserer personene presist og med dybde",
+          "Gjennomsiktig orkestrering — hver stemme høres tydelig"
+        ],
+        youtube: [
+          { title: "Mozart Symphony No 40 G minor first movement molto allegro" },
+          { title: "Mozart Piano Concerto No 21 C major Andante second movement" },
+          { title: "Mozart Don Giovanni Overture opera" }
+        ]
+      },
+      {
+        name: "Ludwig van Beethoven", years: "1770–1827",
+        work: "Symfoni nr. 3, 5 og 9 · Måneskinnsonaten · Fiolinkonsert",
+        note: "Født i Bonn, flyttet til Wien i 1792. Brobygger mellom klassisk og romantisk tid. En av tidenes store revolusjonære i musikken. Ble gradvis døv fra ca. 1798, helt døv i 1816. Musikken virker som et direkte uttrykk for personligheten. Dramatisk konfliktstruktur: 'Fra kamp til seier'. Produksjonen deles i tre perioder: klassisk (til 1802), heroisk (1802–1815) og romantisk (1815–1827).",
+        characteristics: [
+          "Dramatisk formoppbygging med store, brå kontraster i stemning og dynamikk",
+          "Rytme som det viktigste formskapende elementet (f.eks. det berømte firetonesmotivet i Symfoni nr. 5)",
+          "Sprenger klassiske former når det er nødvendig — alltid en organisk helhet",
+          "Mange modulasjoner, noen ganger brått til fjerne tonearter",
+          "Dramatisk konfliktstruktur: spenning bygges opp og løses — 'fra kamp til seier'"
+        ],
+        youtube: [
+          { title: "Beethoven Symphony No 5 C minor first movement allegro con brio" },
+          { title: "Beethoven Symphony No 9 Ode to Joy fourth movement choral" },
+          { title: "Beethoven Moonlight Sonata op 27 No 2 first movement adagio" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "romantic", label: "Romantikk", years: "ca. 1820–1900",
+    accent: "#e05c8a", badgeBg: "rgba(224,92,138,0.10)", badgeText: "#eb80a4",
+    summary: "Romantikken setter følelsen, det subjektive og det individuelle i sentrum. Komponisten vil uttrykke sine mest personlige tanker og følelser gjennom musikken. Nasjonalisme, lengsel, drøm og naturskildringer preger innholdet. Orkestrene vokste, instrumentene ble videreutviklet, og virtuositeten nådde nye høyder.",
+    styleTracks: [
+      { label: "Romantiske temaer og idealer", items: [
+        "Det uoppnåelige, lengsel og drøm",
+        "Det mystiske, fantastiske og eventyrlige",
+        "Naturstemninger — vill og uberørt natur",
+        "Det ubevisste i sinnet",
+        "Det nasjonale — folkemusikk og nasjonal identitet",
+        "Inspirasjon som grunnlag for komposisjon — subjektivitet"
+      ]},
+      { label: "Musikalske stiltrekk", items: [
+        "Lange melodiske spenn — ikke bare periodisk melodikk",
+        "Kromatisk melodikk og harmonikk",
+        "Modulasjoner til fjernere tonearter (altererte akkorder)",
+        "Nye instrumenter: basstuba (1835), saxofon (1845), Boehm-fløyte (1847), Wagner-tuba (1854), celesta (1886)",
+        "Større orkestre — større dynamisk variasjon",
+        "Virtuositet som kunstnerisk ideal",
+        "Nye, frie former: symfonisk dikt, énsatsige karakterstykker, lied-syklus"
+      ]}
+    ],
+    composers: [
+      {
+        name: "Franz Schubert", years: "1797–1828",
+        work: "Vintersreisen · Symfoni nr. 8 («Uferdig») · Lied-sykluser",
+        note: "Lied-mester — over 600 sanger for stemme og klaver (lied = romanse). Kombinerte wienerklassisk arv med romantisk følsomhet. Lied-formen ble et sentralt romantisk uttrykk og ble videreført av Schumann, Brahms og Grieg.",
+        characteristics: [
+          "Sangbar, naturlig melodikk med dyp emosjonell appell",
+          "Overraskende modulasjoner til fjerne tonearter — skaper plutselig stemningsskifte",
+          "Pianoet er en likeverdig stemme — ikke bare akkompagnement",
+          "Teksten og musikken smelter sammen — ordenes innhold former melodien"
+        ],
+        youtube: [
+          { title: "Schubert Der Erlkönig lied D 328 voice piano" },
+          { title: "Schubert Unfinished Symphony No 8 B minor first movement" }
+        ]
+      },
+      {
+        name: "Frédéric Chopin", years: "1810–1849",
+        work: "Ballader · Nocturner · Etyder · Mazurkaer · Valser",
+        note: "Pianistenes poet. Komponerte nesten utelukkende for piano — etuder, nocturner, mazurkaer, valser og ballader. Teknisk krevende og poetisk på samme tid. Levde i Paris, vendte aldri tilbake til Polen, men holdt nasjonal identitet levende gjennom mazurkaene.",
+        characteristics: [
+          "Nesten utelukkende pianomusikk — mestret alle sider av instrumentet",
+          "Cantabile (sangbar) melodikk over rikt akkompagnement (Alberti-bass og arpeggioer)",
+          "Rubato-spill: frihet i tempoet — musikken puster og lever",
+          "Nasjonal polsk identitet i mazurkaer og polonaiser",
+          "Nocturner: poetisk, rolig og svevende — nattstemning og intimitet"
+        ],
+        youtube: [
+          { title: "Chopin Nocturne op 9 No 2 E flat major piano" },
+          { title: "Chopin Ballade No 1 G minor op 23 piano" }
+        ]
+      },
+      {
+        name: "Edvard Grieg", years: "1843–1907",
+        work: "Peer Gynt · Pianokonsert a-moll · Lyriske stykker",
+        note: "Norges mest internasjonalt kjente komponist. Nasjonalromantiker som hentet inspirasjon fra norsk folkemusikk og natur. «I Dovregubbens hall» og «Morgenstemning» er blant historiens mest gjenkjennelige melodier. Komponerte lied-sykluser, kammermusikk og karakterstykker for klaver.",
+        characteristics: [
+          "Norsk folkemusikk integrert i klassisk form — slåtterytmer og folkelige melodier",
+          "Karakteristiske harmonier med tonale trekk fra norske kirketonearter",
+          "Korte karakterstykker for klaver (Lyriske stykker) — stemningsbilder",
+          "Pianokonserten: dramatisk åpning, lyrisk midtsats, livlig finale",
+          "Orkestersuiten Peer Gynt: programmusikk med tydelige naturbilder"
+        ],
+        youtube: [
+          { title: "Grieg In the Hall of the Mountain King Peer Gynt suite orchestra" },
+          { title: "Grieg Morning Mood Peer Gynt suite orchestra" },
+          { title: "Grieg Piano Concerto A minor op 16 first movement allegro" }
+        ]
+      },
+      {
+        name: "Richard Wagner", years: "1813–1883",
+        work: "Der Ring des Nibelungen (4 operaer, 15 timer) · Tristan und Isolde",
+        note: "Revolusjonerte operaen med ledemotivsystemet og musikaldramaet. Ring-syklusen er et av kunsthistoriens mest ambisiøse prosjekter. Bygde sitt eget operahus i Bayreuth. Ekstrem kromatisk harmonikk som nesten oppløser tonaliteten. Enorme orkestre og svært lange satser.",
+        characteristics: [
+          "Ledemotiv-teknikk: korte musikalske motiver knyttes til personer, steder og ideer",
+          "Musikaldrama: kontinuerlig musikk — ingen atskilte numre som i tradisjonell opera",
+          "Ekstrem kromatikk — harmonikken beveger seg hele tiden uten å hvile i tonika",
+          "Enorme orkestre med 100+ musikere og lange orkestralforloper",
+          "Tekst og musikk smeltet sammen — Wagner skrev selv librettoen"
+        ],
+        youtube: [
+          { title: "Wagner Ride of the Valkyries Die Walkure orchestra" },
+          { title: "Wagner Tristan und Isolde Prelude und Liebestod orchestra" }
+        ]
+      },
+      {
+        name: "Pyotr Tsjajkovskij", years: "1840–1893",
+        work: "Svanesjøen · Nøtteknekker · 1812-ouverturen · Symfoni nr. 6",
+        note: "Russisk romantiker. Kombinerte russisk folkemusikk med vesteuropeisk form. Ballettene hans er blant de mest oppsatte i verden. Stor melodisk appell og dramatisk intensitet.",
+        characteristics: [
+          "Sterk, umiddelbar melodikk med emosjonell tyngde",
+          "Russiske folkemusikelementer innarbeidet i vesteuropeisk symfonisk form",
+          "Dramatiske orkestrale klimakser og brå dynamiske kontraster",
+          "Ballettene kjennetegnes av klare temaer knyttet til scener og figurer",
+          "Symfoni nr. 6: tragisk karakter, avsluttes med en langsom, mørk sats — uvanlig"
+        ],
+        youtube: [
+          { title: "Tchaikovsky Nutcracker Waltz of the Flowers ballet orchestra" },
+          { title: "Tchaikovsky 1812 Overture op 49 orchestra cannon" },
+          { title: "Tchaikovsky Symphony No 6 Pathetique first movement" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "modern", label: "Modernisme", years: "1900–1945",
+    accent: "#e8534a", badgeBg: "rgba(232,83,74,0.10)", badgeText: "#ee7870",
+    summary: "Oppgjøret med den romantiske tradisjonen og tonaliteten. Atonalisme, tolvtonemusikk og rytmiske eksperimenter sjokkerte publikum. Jazz vokste frem i USA. Impresjonisme (Debussy), ekspresjonisme (Schoenberg) og neoklassisisme (Stravinsky) representerer ulike modernistiske veier.",
+    styleTracks: [
+      { label: "Modernistiske retninger", items: [
+        "Atonalisme: ingen tonalt sentrum — alle toner likestilles",
+        "Tolvtoneteknikk/dodekafonisme (Schoenberg): tolvtonerekke som komposisjonsprinsipp",
+        "Polytonalitet og polyritme (Stravinsky): flere tonearter og rytmer samtidig",
+        "Impresjonisme: klangfarger og atmosfære i stedet for spenning og løsning (Debussy)",
+        "Ekspresjonisme: intense, mørke følelser — ofte atonalt",
+        "Neoklassisisme: tilbake til barokke og klassiske former med moderne harmoni"
+      ]},
+      { label: "Andre særtrekk", items: [
+        "Rytmiske eksperimenter — uregelmessige taktarter og aksenter",
+        "Perkussive klanger og klangfarge i fokus",
+        "Folkemusikk som komposisjonsmateriale (Bartók: over 10 000 folkeviser samlet)",
+        "Jazz og populærmusikk påvirker kunstmusikken",
+        "Filmmusikkens fremvekst"
+      ]}
+    ],
+    composers: [
+      {
+        name: "Igor Stravinsky", years: "1882–1971",
+        work: "Le Sacre du Printemps (1913) · Petrusjka · Symfonienes symfoni",
+        note: "Urpremieren av Le Sacre utløste bråk og slåsskamp i salen — publikum var sjokkert over de hamrende polytonale rytmene og orkestrasjonens råskap. Revolusjonerte rytme og orkestrasjon. Gikk senere over til neoklassisisme og etter hvert serialisme.",
+        characteristics: [
+          "Polytonalitet: to eller flere tonearter klinges samtidig — skarp, hard klang",
+          "Polyritme og uregelmessige aksenter — rytmen er uforutsigbar og energisk",
+          "Store orkestre med brutal perkusjon og kraftige blåsere",
+          "Folkloristiske russiske melodier brukt som råmateriale",
+          "Neoklassisisme: rent, lineært tonespråk inspirert av barokk og klassisisme"
+        ],
+        youtube: [
+          { title: "Stravinsky Rite of Spring Le Sacre du Printemps orchestra full" },
+          { title: "Stravinsky Petrushka Russian Dance ballet orchestra" }
+        ]
+      },
+      {
+        name: "Arnold Schoenberg", years: "1874–1951",
+        work: "Pierrot Lunaire · Suite op. 25 · Forklaringsnatten",
+        note: "Grunnla tolvtoneteknikken (dodekafonien) — ett av musikkhistoriens mest radikale brudd med tradisjonen. Tolvtonerekken: alle 12 toner i en bestemt rekkefølge, ingen er tonika. Polariserte musikkverdenen. Utviklet også Sprechgesang — en mellomting mellom tale og sang.",
+        characteristics: [
+          "Tolvtonerekke: alle 12 toner brukes likt — ingen tonalitet, ingen tonika",
+          "Atonalitet: musikken hviler aldri — konstant spenning uten løsning",
+          "Sprechgesang: halvtalt, halvsunget vokalstil — teksten deklameres over notert tonehøyde",
+          "Expressivt og intenst uttrykk — mørkt og dissonant",
+          "Forklaringsnatten (tidlig verk): fortsatt tonal og romantisk i stilen"
+        ],
+        youtube: [
+          { title: "Schoenberg Pierrot Lunaire Mondestrunken sprechgesang" },
+          { title: "Schoenberg Verklarte Nacht op 4 string orchestra" }
+        ]
+      },
+      {
+        name: "Claude Debussy", years: "1862–1918",
+        work: "La Mer · Prélude à l'après-midi d'un faune · Bilder",
+        note: "Impresjonistisk klangmaleri inspirert av japansk kunst og symbolistisk poesi. Opphevet tradisjonell harmonikk og lot klangfarger og atmosfære erstatte spenning og løsning. Brukte heltoneskalaen og modale trekk.",
+        characteristics: [
+          "Klangfarge og atmosfære som det viktigste — ikke melodi og form",
+          "Heltoneskala: seks toner jevnt fordelt — flytende, uten ledeloner",
+          "Akkorder behandles som klangflater — ikke som funksjonsharmonikk",
+          "Fin, tynn orkestrering — særlig blåsere og harpe brukes poetisk",
+          "Musikken maler bilder: hav, vind, tåke og lys"
+        ],
+        youtube: [
+          { title: "Debussy Prelude a l apres midi d un faune orchestra flute" },
+          { title: "Debussy La Mer De l aube a midi sur la mer orchestra" },
+          { title: "Debussy Clair de lune Suite bergamasque piano" }
+        ]
+      },
+      {
+        name: "Béla Bartók", years: "1881–1945",
+        work: "Musikk for strykere, slagverk og celesta · Mikrokomos",
+        note: "Samlet over 10 000 folkeviser fra Øst-Europa på fonograf og smeltet dem inn i sin komposisjonsstil. En av det 20. århundres mest originale stemmer — både folklorist og modernist. Perkussiv pianobehandling og asymmetriske rytmer.",
+        characteristics: [
+          "Østeuropeiske folkeviser og -rytmer brukt som komposisjonsmateriale",
+          "Asymmetriske rytmer og taktarter: 5/8, 7/8, skiftende takt",
+          "Perkussiv pianobehandling — pianotoner slås, ikke synges",
+          "Aksial symmetri og folkloristisk modalitet i stedet for tradisjonell tonalitet",
+          "Strykerklang brukt perkussivt og med uvanlige spilleteknikker (col legno, pizzicato)"
+        ],
+        youtube: [
+          { title: "Bartok Music for Strings Percussion and Celesta first movement" },
+          { title: "Bartok Allegro barbaro Sz 49 piano percussive" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "jazzrock", label: "Jazz og Rock", years: "1920–1970",
+    accent: "#f97316", badgeBg: "rgba(249,115,22,0.12)", badgeText: "#fb923c",
+    summary: "Jazz oppsto i New Orleans rundt 1900 fra en blanding av afroamerikanske blues og spirituals, europeisk harmonikk og marsjmusikk. Rock'n'roll vokste frem på 1950-tallet og revolusjonerte populærmusikken. Begge sjangrene endret for alltid hva musikk kunne være og hvem den tilhørte.",
+    styleTracks: [
+      { label: "Jazzens kjennetegn", items: [
+        "Improvisasjon — solisten skaper melodien der og da over et akkordskjema",
+        "Blåtoner (blue notes) — senkede tersser og septimer fra bluesskalaen",
+        "Synkopering — betoningen forskyves fra de sterke til de svake taktslагene",
+        "Call and response — veksling mellom solist og ensemble",
+        "Swing — en særegen rytmisk groovefølelse med triolpreg",
+        "Standardformer: 12-takters blues, 32-takters AABA-form"
+      ]},
+      { label: "Rock'n'rollens kjennetegn", items: [
+        "Røtter i rhythm and blues, gospel og country",
+        "Elektrisk gitar som hovedinstrument",
+        "Sterk backbeat — trommen slår på 2. og 4. taktslag",
+        "Enkel harmonikk: I-IV-V akkordprogresjoner",
+        "Tekst om ungdom, kjærlighet og frihet",
+        "Artisten som stjerne og ikon — ikke bare musiker"
+      ]}
+    ],
+    composers: [
+      {
+        name: "Louis Armstrong", years: "1901–1971",
+        work: "What a Wonderful World · West End Blues · Hot Five og Hot Seven-innspillingene",
+        note: "Jazzens far og en av musikkhistoriens mest innflytelsesrike musikere. Vokste opp i fattigdom i New Orleans og lærte seg trompet på reformskole. Revolusjonerte jazzimprovisasjonen — gikk fra kollektiv improvisasjon til solistens primat. Kjent for sin varme trompetlyd og unike, hese sangstemme.",
+        characteristics: [
+          "Virtuos trompetsolist med enorm klanglig variasjon",
+          "Scat-sang — improvisert vokal uten tekst, trompetlyd med stemmen",
+          "Gikk fra New Orleans-stil til mer soloorientert jazz",
+          "Kombinerte teknisk mestring med folkelig varme og humor"
+        ],
+        youtube: [{ title: "Louis Armstrong West End Blues 1928" }, { title: "Louis Armstrong What a Wonderful World" }]
+      },
+      {
+        name: "Duke Ellington", years: "1899–1974",
+        work: "Mood Indigo · Take the A Train · Sophisticated Lady",
+        note: "Orkesterlederens og arrangørens mester. Ellington ledet sitt storband i over 50 år og komponerte tusenvis av verk. Han hevet jazz til kunstmusikk ved å skrive lange, gjennomkomponerte verk i tillegg til dansenumre. Kjent for å skrive musikk spesifikt tilpasset hvert enkelt bandmedlems særegne klang.",
+        characteristics: [
+          "Mester i storbandarrangement — skrev til enkeltsolisters særegne klang",
+          "Kombinerte jazz med kunstmusikalsk ambisjon",
+          "Jungel sound — eksotiske klanger, mutes og growl-teknikker i brass",
+          "Skrev alt fra korte poplåter til lange symfoniske verk"
+        ],
+        youtube: [{ title: "Duke Ellington Take the A Train" }, { title: "Duke Ellington Mood Indigo" }]
+      },
+      {
+        name: "Miles Davis", years: "1926–1991",
+        work: "Kind of Blue (1959) · Bitches Brew · Birth of the Cool",
+        note: "Den evige fornyeren i jazz. Davis reinventerte seg selv og jazzsjangeren flere ganger: bebop, cool jazz, modal jazz og til slutt jazz fusion med elektriske instrumenter. Kind of Blue fra 1959 er den mestselgende jazzplaten noensinne og introduserte modal jazz — improvisasjon over skalaer i stedet for akkordprogresjoner.",
+        characteristics: [
+          "Modal jazz: improvisasjon over skalaer i stedet for raskt skiftende akkorder",
+          "Lyrisk, innadvendt trompetspill — det ufullstendige og stillheten er viktig",
+          "Ledet jazz inn i fusion med rock og elektronikk på 1970-tallet",
+          "Reinventerte seg selv hvert tiår — aldri komfortabel med status quo"
+        ],
+        youtube: [{ title: "Miles Davis Kind of Blue So What" }, { title: "Miles Davis Birth of the Cool" }]
+      },
+      {
+        name: "Chuck Berry", years: "1926–2017",
+        work: "Johnny B. Goode · Roll Over Beethoven · Maybellene",
+        note: "Rock'n'rollens far. Chuck Berry kombinerte rhythm and blues med country og skapte rockens musikalske språk. Hans gitar-riff, særlig den karakteristiske åpningen til Johnny B. Goode, ble malen for all rocke-gitar som fulgte. Tekstene hans om tenåringers liv, biler og musikk definerte rock'n'rollens tematikk.",
+        characteristics: [
+          "Elektrisk gitar som melodiinstrument og rytmeinstrument samtidig",
+          "Duck walk — sceneshow som del av musikken",
+          "Blanding av blues, country og rhythm and blues",
+          "Enkle, smittende riff som grunnlag for låtene"
+        ],
+        youtube: [{ title: "Chuck Berry Johnny B Goode" }, { title: "Chuck Berry Maybellene" }]
+      },
+      {
+        name: "Elvis Presley", years: "1935–1977",
+        work: "Hound Dog · Jailhouse Rock · Love Me Tender",
+        note: "Kongen av rock'n'roll. Elvis tok rhythm and blues og gospel fra afroamerikansk kultur og brakte det til et hvitt massepublikum — noe som var både revolusjonerende og kontroversielt. Hans sceneopptredener med hoftebevegelser sjokkerte 1950-tallsamerika. Mer enn noen annen enkeltperson symboliserer han rock'n'rollens kulturelle gjennombrudd.",
+        characteristics: [
+          "Kombinerte hvit country med afroamerikansk rhythm and blues",
+          "Karismatisk sceneopptreden — kroppen som uttrykksverktøy",
+          "Vokalt register fra sart ballade til kraftfull rock",
+          "Symbol på ungdomsopprøret mot etterkrigstidens konservative kultur"
+        ],
+        youtube: [{ title: "Elvis Presley Jailhouse Rock" }, { title: "Elvis Presley Hound Dog Ed Sullivan Show" }]
+      },
+      {
+        name: "Ella Fitzgerald", years: "1917–1996",
+        work: "A-Tisket, A-Tasket · Summertime · The Cole Porter Songbook",
+        note: "Jazzens første dame og en av historiens største vokalister. Fitzgerald var kjent for sin perfekte intonasjon, enorme vokale rekkevidde og virtuose scat-sang. Hun innspilte Songbook-serien — komplette samlinger av de store amerikanske komponistenes sanger — og løftet dem til klassisk status.",
+        characteristics: [
+          "Uovertruffen intonasjon og rytmisk presisjon",
+          "Scat-sang på linje med de beste instrumentalsolistene",
+          "Evne til å tolke tekst med dybde og varme",
+          "Bro mellom swing, bebop og populærsang"
+        ],
+        youtube: [{ title: "Ella Fitzgerald How High the Moon scat" }, { title: "Ella Fitzgerald Summertime" }]
+      }
+    ]
+  },
+  {
+    id: "contemporary", label: "Samtid", years: "1945–i dag",
+    accent: "#5ecf4a", badgeBg: "rgba(94,207,74,0.10)", badgeText: "#7ddc64",
+    summary: "Mangfold uten sidestykke. Serialisme, minimalisme, elektronisk musikk, rock, pop og hip-hop. Grenser mellom sjangre viskes ut og musikk fra hele verden smelter sammen.",
+    styleTracks: [
+      { label: "Stilretninger etter 1945", items: [
+        "Serialisme: strengt kontrollert komposisjon (Boulez, Stockhausen)",
+        "Minimalisme: repetitive mønstre som gradvis endres (Glass, Riley, Adams)",
+        "Elektronisk og elektroakustisk musikk",
+        "Postmodernisme: sitering og blanding av stiler",
+        "Ny enkelhet og ny spiritualitet (Pärt, Tavener)",
+        "Globalisme: verdensmusikk og kryssbefruktning"
+      ]},
+      { label: "Populærmusikk som kunstform", items: [
+        "Jazz: fra swing til bebop, cool jazz og fri jazz",
+        "Rock'n'roll fra 1950-tallet",
+        "The Beatles: studio som komposisjonsverktøy — pop møter kunstmusikk",
+        "Bob Dylan: teksten som litterært instrument og samfunnskritikk",
+        "Hip-hop og elektronisk dansmusikk fra 1970–80-tallet",
+        "Globale musikkstrømmer smelter stadig mer sammen"
+      ]}
+    ],
+    composers: [
+      {
+        name: "John Cage", years: "1912–1992",
+        work: "4'33\" (1952) · Sonater og interludes for prepared piano",
+        note: "Det 'stilleste' verket i musikkhistorien — pianisten setter seg ned, åpner lokket og spiller ingenting i 4 minutter og 33 sekunder. Cage mente omgivelseslydene var musikken. Spurte: hva er musikk? Hva er lyd? Hva er stillhet? Brukte tilfeldighetsprinsipper og prepared piano (gjenstander plassert i pianostrengen).",
+        characteristics: [
+          "Tilfeldighetsprinsipper (chance music): komposisjonen overlates delvis til tilfeldighetene",
+          "Prepared piano: skruer, gummi og metall i strengene gir perkussiv, fremmed klang",
+          "Filosofisk tilnærming: stiller spørsmål ved hva musikk er",
+          "4'33\": stillheten og omgivelseslydene er verket — lytteren skaper musikken"
+        ],
+        youtube: [
+          { title: "John Cage 4 minutes 33 seconds silent piece performance" },
+          { title: "John Cage Sonatas Interludes prepared piano" }
+        ]
+      },
+      {
+        name: "Philip Glass", years: "f. 1937",
+        work: "Einstein on the Beach · Koyaanisqatsi · Symfonier",
+        note: "En av minimalismens sentrale skikkelser. Repetitive mønstre som gradvis og umerkelig endrer seg skaper en hypnotisk effekt. En av de mest innflytelsesrike komponistene i det 20. og 21. århundre, kjent for opera, filmmusikk og ensemblemusikk.",
+        characteristics: [
+          "Minimalisme: korte mønstre repeteres og endres gradvis over lang tid",
+          "Hypnotisk og meditativ virkning — lytteren trekkes inn i de små endringene",
+          "Tonal, men statisk harmonikk — beveger seg sakte og unngår dramatiske klimakser",
+          "Tydelig puls og rytme — enklere å følge enn serialisme og atonalitet"
+        ],
+        youtube: [
+          { title: "Philip Glass Glassworks Opening minimalism piano" },
+          { title: "Philip Glass Koyaanisqatsi life out of balance soundtrack" }
+        ]
+      },
+      {
+        name: "Arvo Pärt", years: "f. 1935",
+        work: "Spiegel im Spiegel · Tabula Rasa · Fratres",
+        note: "Estnisk komponist som utviklet sin 'tintinnabuli'-teknikk etter et årelangt stillhetsledd. Hans musikk er enkel, nesten meditativ og dypt åndelig. I dag den mest spilte levende komponisten i verden.",
+        characteristics: [
+          "Tintinnabuli-teknikk: én stemme beveger seg trinnvis (melodi), én holder treklangen (klokkeslag)",
+          "Ekstrem enkelhet og klarhet — bare det nødvendige er igjen",
+          "Sakral og åndelig karakter — inspirert av gregorianikk og ortodoks tradisjon",
+          "Langsom bevegelse og store rom mellom tonene — musikken puster",
+          "Diatonisk tonalitet uten komplisert harmonikk — nær middelalderens modalitet"
+        ],
+        youtube: [
+          { title: "Arvo Part Spiegel im Spiegel violin piano tintinnabuli" },
+          { title: "Arvo Part Tabula Rasa Ludus strings prepared piano" }
+        ]
+      },
+      {
+        name: "The Beatles / Bob Dylan", years: "1960-tallet",
+        work: "Sgt. Pepper's Lonely Hearts Club Band · Blowin' in the Wind · Highway 61 Revisited",
+        note: "Populærmusikken som høykunst. The Beatles utvidet studioteknikkens muligheter radikalt og kombinerte pop med kunstmusikalske elementer. Dylan gjorde teksten til et litterært og samfunnskritisk instrument. Begge forandret for alltid hva populærmusikk kunne være.",
+        characteristics: [
+          "Studio som komposisjonsverktøy: baklengs innspilling, tape-loops og studioeffekter",
+          "Blanding av sjangre: pop, rock, indisk musikk, kammermusikk og psykedelika",
+          "Tekst som litteratur og protest (Dylan): poetiske bilder og samfunnskritikk",
+          "Sgt. Pepper's: første konseptalbum — pop som sammenhengende kunstnerisk utsagn",
+          "Tilgjengelig melodikk med gjenkjennelig refreng — populær appell kombinert med kunstambisjon"
+        ],
+        youtube: [
+          { title: "Beatles A Day in the Life Sgt Peppers Lonely Hearts Club Band" },
+          { title: "Bob Dylan Blowin in the Wind live acoustic folk" }
+        ]
+      }
+    ]
+  }
+ 
+];
+
+let activeIdx = 0;
+let activeComposer = null;
+
+function renderNav() {
+  const nav = document.getElementById('era-nav');
+  nav.innerHTML = '';
+  eras.forEach((era, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'era-tab' + (i === activeIdx ? ' active' : '');
+    btn.textContent = era.label;
+    if (i === activeIdx) { btn.style.borderBottomColor = era.accent; btn.style.color = era.accent; }
+    btn.onclick = () => { activeIdx = i; activeComposer = null; renderNav(); renderMain(); };
+    nav.appendChild(btn);
+  });
+}
+
+function renderMain() {
+  const era = eras[activeIdx];
+  const content = document.getElementById('main-content');
+
+  const infoCols = era.styleTracks.map(track => `
+    <div class="info-block">
+      <h3>${track.label}</h3>
+      <ul>${track.items.map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>`).join('');
+
+  const composerBtns = era.composers.map((comp, ci) => `
+    <button class="composer-btn${activeComposer === comp.name ? ' active' : ''}"
+      style="${activeComposer === comp.name ? 'border-color:' + era.accent : ''}"
+      data-idx="${ci}"
+      onclick="selectComposer(this)">
+      <span class="c-name">${comp.name}</span>
+      <span class="c-years">${comp.years}</span>
+    </button>`).join('');
+
+  let detailHTML = '';
+  if (activeComposer) {
+    const comp = era.composers.find(c => c.name === activeComposer);
+    if (comp) {
+      const charItems = comp.characteristics.map(c => `<li>${c}</li>`).join('');
+      const ytLinks = comp.youtube.map(yt => {
+        const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(yt.title);
+        return `<button class="yt-link" onclick="window.open('${searchUrl}','_blank')">${YT_ICON}<span>${yt.title}</span></button>`;
+      }).join('');
+      detailHTML = `
+        <div class="detail-panel" style="border-color:${era.accent}33">
+          <div class="d-name">${comp.name}</div>
+          <div class="d-years">${comp.years}</div>
+          <div class="d-label">Kjente verk</div>
+          <div class="d-work">${comp.work}</div>
+          <div class="d-label">Om komponisten</div>
+          <div class="d-note">${comp.note}</div>
+          <div class="d-label">Musikalske kjennetegn</div>
+          <ul class="char-list">${charItems}</ul>
+          <div class="d-label">Lytt på YouTube</div>
+          <div class="yt-links">${ytLinks}</div>
+        </div>`;
+    }
+  }
+
+  content.innerHTML = `
+    <div class="era-header">
+      <div class="years-badge" style="background:${era.badgeBg};color:${era.badgeText}">${era.years}</div>
+      <h2>${era.label}</h2>
+      <p class="summary">${era.summary}</p>
+    </div>
+    <div class="two-col">${infoCols}</div>
+    <hr class="section-divider">
+    <div class="section-label">Sentrale komponister — klikk for detaljer</div>
+    <div class="composer-grid">${composerBtns}</div>
+    ${detailHTML}
+  `;
+}
+
+window.selectComposer = function(btn) {
+  const name = eras[activeIdx].composers[parseInt(btn.dataset.idx)].name;
+  activeComposer = activeComposer === name ? null : name;
+  renderNav(); renderMain();
+};
+
+
+// ── QUIZ DATA ────────────────────────────────────────────────────
+const quizData = {
+  medieval: {
+    label: "Middelalder", accent: "#9d7aff",
+    questions: [
+      { q: "Hva kalles den enstemmige latinsk kirkesangen standardisert under pave Gregor den store?", opts: ["Gregoriansk sang","Organum","Madrigal","Motet"], c:0, e:"Gregoriansk sang er oppkalt etter pave Gregor den Store (540–604) som samlet inn og systematiserte sangene som ble brukt i kirkene." },
+      { q: "Hva kjennetegner gregoriansk sang?", opts: ["Polyfoni med mange stemmer","Enstemmig, uten instrumenter og med fri rytmikk","Fast taktart og dur/moll-tonalitet","Dansebar rytme med fast puls"], c:1, e:"Gregoriansk sang er monofon (enstemmig), uten instrumenter, og rytmen følger teksten – ikke en fast puls." },
+      { q: "Hva heter toneartene som brukes i gregoriansk sang?", opts: ["Dur og moll","Kirketoneartene – de modale skalaene","Pentatone skalaer","Kromatiske skalaer"], c:1, e:"Kirketoneartene (dorisk, frygisk, lydisk, mixolydisk) brukes i stedet for dur og moll og gir melodiene et tidløst preg." },
+      { q: "Hva er organum i middelaldermusikk?", opts: ["Et kirkeorgel","Flerstemmig musikk der nye stemmer legges til gregoriansk sang","En danseform fra middelalderen","En type trubadursang"], c:1, e:"Organum er flerstemmig sang der man la til én eller flere nye stemmer til en gregoriansk melodi – starten på vestlig flerstemmighet." },
+      { q: "Hvem var Pérotin, og hva er han kjent for?", opts: ["En italiensk trubadur","Fransk komponist ved Notre-Dame kjent for flerstemmig organum","En tysk minnesanger","En munk som oppfant noteskriften"], c:1, e:"Pérotin var organist ved Notre-Dame i Paris og tilhørte Ars Antiqua-perioden. Han komponerte organum med opptil fire stemmer." },
+      { q: "Hva menes med Ars Nova i musikken?", opts: ["Den gamle kunsten fra 900-tallet","Ny musikalsk stil fra 1300-t med mer rytmisk frihet","En type orgel fra 1200-tallet","Betegnelsen på renessansens musikk"], c:1, e:"Ars Nova fra 1300-tallet hadde mer framdrift, todelt takt og nyansert rytmikk – representert ved Guillaume de Machaut." },
+      { q: "Hva kalles riddernes sangkunst i Sør-Frankrike?", opts: ["Minnesang","Troubadour-sang","Trouvère-sang","Gregoriansk sang"], c:1, e:"Ridderne i Sør-Frankrike ble kalt troubadurer. I Nord-Frankrike: trouvères. I Tyskland: minnesangere." },
+      { q: "Hvem var Hildegard von Bingen?", opts: ["En dronning som finansierte opera","Abbedisse og en av de første kjente komponistene","En mannlig troubadur fra Frankrike","En kirkekomponist fra 1400-tallet"], c:1, e:"Hildegard von Bingen (1098–1179) var abbedisse fra Rhinen og en av de første komponistene vi kjenner ved navn." },
+      { q: "Hva er syllabisk stil i gregoriansk sang?", opts: ["Mange toner per tekststavelse","Én tone per tekststavelse","Instrumentalt akkompagnement","Todelt takt med fast puls"], c:1, e:"Syllabisk stil betyr én tone per stavelse. Det motsatte er melismatisk stil der mange toner synges på én stavelse." },
+      { q: "Hvem begynte å plassere noter på linjer og la grunnlaget for vår noteskrift?", opts: ["Pave Gregor den Store","Guido fra Arezzo","Pérotin","Guillaume de Machaut"], c:1, e:"Munken Guido fra Arezzo begynte på 1000-tallet å plassere noter på og mellom linjer – starten på notesystemet vi bruker i dag." }
+    ]
+  },
+  renaissance: {
+    label: "Renessanse", accent: "#3ecf8e",
+    questions: [
+      { q: "Hva betyr ordet renessanse?", opts: ["Ny musikk","Gjenfødelse","Frihet","Harmoni"], c:1, e:"Renessanse betyr gjenfødelse – en gjenoppdagelse av antikkens gresk-romerske idealer og kultur." },
+      { q: "Hva kjennetegner vokalmusikken i renessansen?", opts: ["Generalbass og dur/moll","Enstemmig gregoriansk sang","Rik vokalpolyfoni med selvstendige stemmer","Elektrisk akkompagnement"], c:2, e:"Vokalpolyfoni – mange selvstendige stemmer i samspill – er renessansens fremste stilkjennetegn." },
+      { q: "Hva er imitasjonsteknikk i renessansemusikk?", opts: ["At alle stemmer synger likt","At stemmene etter tur etteraper hverandre med samme motiv","At musikken imiterer naturen","En dansetype fra Italia"], c:1, e:"Imitasjonsteknikk betyr at stemmene etter tur presenterer samme motiv – karakteristisk for flamsk polyfoni." },
+      { q: "Hva er et madrigal?", opts: ["En form for kirkemusikk","En sekulær vokalform populær i Italia og England","Et instrument fra renessansen","En type messe"], c:1, e:"Madrigalet er en sekulær vokalform som blomstret i Italia og England i renessansen, ofte med tekstmaleri." },
+      { q: "Hva er ordmaleri (word painting)?", opts: ["At musikken beskrives med ord","At musikken etterligner meningen i teksten musikalsk","At teksten skrives inn i notene","Et annet ord for imitasjon"], c:1, e:"Ordmaleri betyr at musikken etterligner hva ordene beskriver – melodien synker på sorg og stiger på opp." },
+      { q: "Hvem kalte Josquin des Prez notenes mester?", opts: ["Pave Julius II","Martin Luther","Giovanni Palestrina","Kong Henrik VIII"], c:1, e:"Martin Luther kalte Josquin des Prez notenes mester og betraktet ham som sin favorittkomponist." },
+      { q: "Hva er en motet?", opts: ["En dansesats for orkester","Et polyfont vokalverk med religiøs tekst","Et instrument i renessansen","En type solosonate"], c:1, e:"Motetten er et polyfont vokalverk med religiøs tekst – en av de viktigste sjangrene i renessansens kirkemusikk." },
+      { q: "Hva var boktrykkerkunstens betydning for musikken?", opts: ["Musikere ble arbeidsledige","Notesamlinger ble spredt og folk spilte hjemme","Kirkene fikk mer makt","Opera ble oppfunnet"], c:1, e:"Gutenbergs boktrykkerkunst gjorde det mulig å trykke noter. Musikk nådde et bredere publikum utenfor kirke og adel." },
+      { q: "Hva kjennetegner Palestrinas kontrapunkt?", opts: ["Brå sprang og harde dissonanser","Trinnvis, glatt melodikk med forsiktige dissonanser","Fri atonal stil","Energisk rytmikk med mange pauser"], c:1, e:"Palestrinas kontrapunkt er kjent for glatt, trinnvis melodikk der dissonanser alltid forberedes og løses forsiktig." },
+      { q: "Hva er Monteverdis L'Orfeo fra 1607 kjent for?", opts: ["Det er den første symfonien","Det er den eldste operaen som fortsatt settes opp regelmessig","Det er den første strykekvartetten","Det er Monteverdis eneste verk"], c:1, e:"L'Orfeo fra 1607 regnes som operaens fødsel – den tidligste operaen som fortsatt fremføres regelmessig i dag." }
+    ]
+  },
+  baroque: {
+    label: "Barokk", accent: "#f0a033",
+    questions: [
+      { q: "Hva betyr ordet barokk opprinnelig?", opts: ["Enkelt og rent","Detaljrikt, rikt utsmykket og overdådig","Stille og meditativt","Folkelig og populært"], c:1, e:"Barokk er opprinnelig en betegnelse fra arkitektur og billedkunst og betyr detaljrikt, rikt utsmykket, overdådig." },
+      { q: "Hva er generalbass (basso continuo)?", opts: ["En type soloinstrument","En akkompagnerende basslinje med akkorder angitt som tall","Et barokkorkester uten strykere","Et verk for kor uten akkompagnement"], c:1, e:"Generalbass er en akkompagnerende basslinje der akkordene angis som tall (besifring) over bassnotene – et grunnleggende prinsipp i barokkens musikk." },
+      { q: "Hva sier affektlæren i barokkmusikk?", opts: ["Musikk er rent dekorativ","Musikken skal uttrykke én bestemt grunnfølelse per avsnitt","En teknikk for å ornamentere melodier","Et system for å bestemme tonearter"], c:1, e:"Affektlæren sier at musikken i et avsnitt skal uttrykke én bestemt grunnfølelse – sinne, sorg eller glede." },
+      { q: "Hva er forskjellen på oratorium og opera?", opts: ["Oratoriet er kortere og komisk","Oratoriet fremføres uten scenisk handling og kostyme","Oratoriet bruker bare solister","Det er ingen forskjell"], c:1, e:"Oratoriet har samme musikalske form som operaen, men fremføres i konsertform – uten scenografi, kostymer og skuespill." },
+      { q: "Hva er et resitativ i barokkmusikk?", opts: ["En lang melodisk arie","Talesang der melodien følger teksten naturlig uten fast taktart","Et instrumentalstykke uten sang","En danseform fra Italia"], c:1, e:"Resitativer er talesang der melodien følger tekstens naturlige rytme. De brukes til å fortelle handling og dialog." },
+      { q: "Hva er J.S. Bachs kirkekantate bygd opp av?", opts: ["Bare korpartier","Korsats, resitativ, arie og koral basert på søndagens bibeltekst","Bare resitativer og arier","En lang symfoni med tekst"], c:1, e:"Bachs kantater er bygd opp av korsatser, resitativer, arier og instrumentalsatser, skrevet for en bestemt søndag i kirkeåret." },
+      { q: "Hva er en fuge?", opts: ["En dansesats i tredelttakt","En kontrapunktisk form der et tema imiteres i ulike stemmer","Et akkordbasert stykke for orgel","En type operaarie"], c:1, e:"En fuge er en kontrapunktisk komposisjon der et kort tema presenteres og imiteres i ulike stemmer. Bach er fugaens fremste mester." },
+      { q: "Hva betyr concerto grosso?", opts: ["Et stykke for ett soloinstrument og orkester","En form der en gruppe solister kontrasterer mot hele orkesteret","Et orkesterverk uten solister","Et kammermusikverk for strykekvartett"], c:1, e:"Concerto grosso er en barokkform der en liten gruppe solister (concertino) kontrasterer mot det store orkesteret (ripieno)." },
+      { q: "Hva kjennetegner Vivaldis Årstidene?", opts: ["Langsom og kontemplativ stil","Energisk driv med ritornellform og programmusikalsk naturskildring","Enstemmig melodi uten akkompagnement","Tolvtonestil uten tonalitet"], c:1, e:"Årstidene er programmusikk – musikken beskriver konkrete naturbilder. Ritornellformen binder satsene sammen med et tilbakevendende orkestertema." },
+      { q: "Hva er Händels Messiah?", opts: ["En opera om Jesus","Et oratorium sammensatt av ulike bibelske tekster","En kantate for julefeiringen","En symfonisk suite for orkester"], c:1, e:"Messiah er et oratorium – ikke en opera – der teksten er sammensatt av ulike bibelsteder og fremføres i konsertform." }
+    ]
+  },
+  classical: {
+    label: "Wienerklassisisme", accent: "#5aabf5",
+    questions: [
+      { q: "Hva er de tre wienerklassikerne?", opts: ["Bach, Händel og Vivaldi","Haydn, Mozart og Beethoven","Schubert, Chopin og Grieg","Wagner, Brahms og Liszt"], c:1, e:"Joseph Haydn, Wolfgang Amadeus Mozart og Ludwig van Beethoven er de tre store wienerklassikerne – alle virket i Wien." },
+      { q: "Hva kjennetegner klassisk stil?", opts: ["Tykk kontrapunktisk tekstur","Klarhet, balanse, homofon tekstur og periodisk form","Atonalitet og kromatikk","Store orkestre med mange nye instrumenter"], c:1, e:"Klassisk stil kjennetegnes av klarhet, balanse og homofon tekstur (melodi over akkompagnement)." },
+      { q: "Hva er sonatesatsform?", opts: ["En sats med én melodi som varieres","Treleddet form: eksposisjon – gjennomføring – rekapitulasjon","En danseform i tredelttakt","Et stykke for ett soloinstrument"], c:1, e:"Sonatesatsen består av eksposisjon (HT og ST presenteres), gjennomføring (bearbeides) og rekapitulasjon (gjentas)." },
+      { q: "Hva er periodisk form i klassisk musikk?", opts: ["En lang, fri melodilinje","Symmetriske fraser av typen spørsmål og svar","En form for variasjon","En satstype uten tema"], c:1, e:"Periodisk form: forsetningen er et spørsmål og ettersetningen er et svar – symmetriske fraser." },
+      { q: "Hva er dualisme i sonatesatsen?", opts: ["At satsen har to komponister","Kontrasten mellom kraftig hovedtema og lyrisk sidetema","At satsen spilles av to instrumenter","At satsen er tredelt"], c:1, e:"Dualisme betyr to kontrasterende temaer – typisk et kraftig og energisk hovedtema mot et mer lyrisk sidetema i en annen toneart." },
+      { q: "Hva kalles Haydn i musikkhistorien?", opts: ["Pianistenes poet","Symfoniens far og strykekvartettens far","Operaens far","Kontrapunktets mester"], c:1, e:"Haydn kalles symfoniens far (107 symfonier) og strykekvartettens far (75 strykekvartetter)." },
+      { q: "Hva er Beethovens tre komposisjonsperioder?", opts: ["Barokk, klassisk og romantisk","Klassisk, heroisk og romantisk","Ung, moden og sen","Tidlig, mellom og sen"], c:1, e:"Beethovens produksjon deles i klassisk (til 1802), heroisk (1802–1815, store dramatiske verk) og romantisk (1815–1827, mer meditativ)." },
+      { q: "Hva er et sidetema i sonatesatsen?", opts: ["Et tema som aldri gjentas","Det andre temaet i eksposisjonen, ofte i dominanttonearten","Et tema kun i gjennomføringen","En melodi uten harmonikk"], c:1, e:"Sidetemaet presenteres etter hovedtemaet i eksposisjonen og er vanligvis i dominanttonearten." },
+      { q: "Hva betyr gjennomføring i sonatesatsen?", opts: ["En gjentagelse av eksposisjonen","Temaene bearbeides, fragmenteres og modulerer til nye tonearter","En avsluttende koda","En presentasjon av nye temaer"], c:1, e:"I gjennomføringen presenteres temaene i ny drakt – fragmenteres, kombineres og vandrer gjennom ulike tonearter." },
+      { q: "Hva var Beethovens viktigste bidrag til symfonien?", opts: ["Han fjernet blåserne","Han byttet menuetten med scherzo og ga symfonien emosjonell tyngde","Han innførte generalbass","Han reduserte orkesteret"], c:1, e:"Beethoven byttet 3. satsens menuett med scherzo, utvidet omfanget kraftig og ga symfonien emosjonell tyngde." }
+    ]
+  },
+  romantic: {
+    label: "Romantikk", accent: "#e05c8a",
+    questions: [
+      { q: "Hva er det sentrale idealet i romantisk musikk?", opts: ["Klarhet, balanse og orden","Subjektivitet, følelse og personlig uttrykk","Polyfoni og kontrapunkt","Objektivitet og formell strenghet"], c:1, e:"Romantikken setter det individuelle og subjektive i sentrum. Komponisten vil uttrykke sine egne følelser." },
+      { q: "Hva er et symfonisk dikt?", opts: ["En symfoni med fire satser","Et orkesterverk i én sats basert på et poetisk program","En kantate for kor og orkester","Et stykke for klaver solo"], c:1, e:"Det symfoniske diktet er en ny sjanger fra romantikken – et orkesterverk i én sats der musikken forteller en historie eller skildrer et bilde." },
+      { q: "Hva er en lied (romanse)?", opts: ["Et oratorium","En sang for stemme og klaver til romantisk lyrikk","En operaarie","En instrumentalsonate"], c:1, e:"Lied er en sang for én stemme og klaver med tekst fra romantisk lyrikk. Schubert er sjangerens fremste mester med over 600 lieder." },
+      { q: "Hvilke tre lied-former finnes det?", opts: ["Sonateform, rondeform og variasjon","Strofisk, variert strofisk og gjennomkomponert","Eksposisjon, gjennomføring og rekapitulasjon","ABA, AA og ABC"], c:1, e:"Lied-formene er: strofisk (alle strofer lik), variert strofisk (noen strofer varieres) og gjennomkomponert (musikken tilpasses teksten hele veien)." },
+      { q: "Hva er et ledemotiv (leitmotiv)?", opts: ["Et langt romantisk tema","Et kort motiv knyttet til en person, sted eller idé – brukt av Wagner","En type akkord som modulerer","Et innledingstema i en symfoni"], c:1, e:"Ledemotivet er et kort gjenkjennelig musikalsk motiv knyttet til en person, gjenstand eller idé. Wagner utviklet dette til et avansert system." },
+      { q: "Hva er Wagners Gesamtkunstwerk?", opts: ["Et samleverk av alle Wagners operaer","Idealet om å smelte musikk, tekst, scenebilde og handling til ett kunstnerisk hele","Et begrep for romantisk programmusikk","Betegnelsen på et flersatsig orkesterverk"], c:1, e:"Gesamtkunstwerk er Wagners begrep for et totalt kunstverk der musikk, poesi, sceniske bilder og handling smelter fullstendig sammen." },
+      { q: "Hva karakteriserer romantisk harmonikk?", opts: ["Enklere harmonikk enn klassisk","Mer kromatikk, altererte akkorder og modulasjoner til fjernere tonearter","Strengt T-S-D uten avvik","Bruk av kirketonearter"], c:1, e:"Romantisk harmonikk kjennetegnes av utbygde og altererte akkorder, kromatikk og dristige modulasjoner til fjerne tonearter." },
+      { q: "Hvilken lied-form er Schuberts Erlkönig?", opts: ["Strofisk","Gjennomkomponert","Variert strofisk","ABA-form"], c:1, e:"Erlkönig er gjennomkomponert – musikken endrer seg kontinuerlig for å følge den dramatiske fortellingen." },
+      { q: "Hva er nasjonalromantikk?", opts: ["En politisk bevegelse","En retning der komponister hentet inspirasjon fra sitt lands folkemusikk og identitet","Romantisk musikk skrevet i Frankrike","Et annet navn for programmusikk"], c:1, e:"Nasjonalromantikken bruker bevisst folkemusikk, historiske tekster og nasjonale stemninger – Grieg og Smetana er eksempler." },
+      { q: "Hva er Edvard Griegs tilknytning til norsk musikk?", opts: ["Han forkastet norsk folkemusikk","Han integrerte norsk folkemusikk og naturstemninger i klassisk form","Han komponerte bare tysk musikk","Han var den første norske operakomponist"], c:1, e:"Grieg er nasjonalromantiker – han hentet inspirasjon fra norsk folkemusikk, slåtterytmer og natur og integrerte dette i vesteuropeiske former." }
+    ]
+  },
+  modern: {
+    label: "Modernisme", accent: "#e8534a",
+    questions: [
+      { q: "Hva er atonalitet?", opts: ["Musikk uten instrumenter","Musikk uten tonalt sentrum – ingen tone er tonika","Musikk med mange tonearter samtidig","Musikk uten rytme"], c:1, e:"Atonal musikk har ikke noe tonalt sentrum – alle toner er likestilte og ingen oppfatter vi som hjemmetone." },
+      { q: "Hva er tolvtoneteknikk (dodekafonisme)?", opts: ["En teknikk der man bruker 12 takter","Alle 12 toner brukes i en bestemt rekkefølge uten tonika","En rytmisk teknikk med 12 pulser","En orgelregistreringsteknikk"], c:1, e:"Tolvtoneteknikken (Schoenberg) ordner alle 12 toner i en bestemt rekke som danner grunnlaget for komposisjonen." },
+      { q: "Hva er Sprechgesang?", opts: ["Tysk ord for solosang","En vokalstil midt mellom tale og sang","En type korsang","En barokkarie-form"], c:1, e:"Sprechgesang er en vokalstil midt mellom tale og sang. Schoenberg brukte det i Pierrot Lunaire." },
+      { q: "Hva er impresjonisme i musikk?", opts: ["Musikk som imiterer malerier","Klangfarge og atmosfære viktigere enn melodi og form","Et begrep for Stravinskys rytmiske musikk","En type atonalitet"], c:1, e:"Musikk-impresjonismen (Debussy) fokuserer på klangfarger og stemninger. Akkorder brukes som klangflater heller enn funksjonsharmonikk." },
+      { q: "Hva skjedde på urpremieren av Le Sacre du Printemps i 1913?", opts: ["Det ble en stor suksess","Det brøt ut bråk og slåsskamp i salen","Urpremieren ble avlyst","Ingen møtte opp"], c:1, e:"Urpremieren i Paris 1913 utløste bråk og slåsskamp. Publikum var sjokkert over de hamrende, polytonale rytmene." },
+      { q: "Hva er polytonalitet?", opts: ["Musikk i én bestemt toneart","To eller flere tonearter klinges samtidig","Musikk som sakte veksler tonearter","Et annet ord for atonalitet"], c:1, e:"Polytonalitet betyr at to eller flere tonearter klinger samtidig – karakteristisk for Stravinsky." },
+      { q: "Hva er Bartóks viktigste kilde til komposisjonsmateriale?", opts: ["Tysk kirkemusikk fra barokken","Østeuropeisk folkemusikk samlet inn på fonograf","Franske impresjonistiske stiltrekk","Wienklassisk sonateform"], c:1, e:"Bartók samlet over 10 000 folkeviser fra Øst-Europa og integrerte rytmer, melodier og modalitet fra disse i sin komposisjonsstil." },
+      { q: "Hva er neoklassisisme i musikk?", opts: ["En retning der man skriver ny gregoriansk sang","Bruk av barokke og klassiske former med moderne harmonikk","Et annet navn for romantikken","En type elektronisk musikk"], c:1, e:"Neoklassisisme betyr tilbake til eldre former – fugaen, sonateformen – men med moderne harmonikk. Stravinsky er fremste eksempel." },
+      { q: "Hva kjennetegner Debussys harmonikk?", opts: ["Streng T-S-D funksjonsharmonikk","Akkorder som klangflater, heltoneskala og oppløsning av tradisjonell tonalitet","Tolvtonerekker uten tonalitet","Enkel treklangharmonikk"], c:1, e:"Debussy behandlet akkorder som klangflater. Han brukte heltoneskalaen og modale trekk, og lot stemning erstatte spenning og løsning." },
+      { q: "Hva er Bartóks Allegro barbaro kjent for?", opts: ["Vakker lyrisk melodikk","Perkussiv og hamrende pianobehandling – pianotonen slås ikke synges","Romantisk harmonikk","En sonateform uten temaer"], c:1, e:"Allegro barbaro kjennetegnes av perkussiv pianobehandling – harde rytmer og asymmetriske mønstre. Pianet er her et slagverksinstrument." }
+    ]
+  },
+  contemporary: {
+    label: "Samtid", accent: "#5ecf4a",
+    questions: [
+      { q: "Hva er minimalisme i musikk?", opts: ["Musikk med bare én stemme","Korte mønstre repeteres og gradvis endres over lang tid","Musikk der alt spilles pianissimo","Elektronisk musikk fra 1950-tallet"], c:1, e:"Minimalisme (Glass, Riley, Adams) bruker repetitive mønstre som gradvis og umerkelig forandres. Effekten er hypnotisk og meditativ." },
+      { q: "Hva er John Cages 4 minutter og 33 sekunder?", opts: ["Et stykke der pianisten spiller så fort som mulig","Et stykke der utøveren spiller ingenting – omgivelseslydene er musikken","En symfoni i fire satser","Et stykke for prepared piano og orkester"], c:1, e:"4'33\" (1952): utøveren setter seg ned og spiller ingenting. Cage mente omgivelseslydene i salen ER musikken." },
+      { q: "Hva er prepared piano?", opts: ["Et piano som er stemt om","Gjenstander som skruer og gummi er plassert i strengene for å endre klangen","Et elektronisk piano","Et piano som spilles baklengs"], c:1, e:"Prepared piano er Cages oppfinnelse der ulike gjenstander plasseres mellom pianostrengen for å gi en perkussiv, fremmed klang." },
+      { q: "Hva er Arvo Pärts tintinnabuli-teknikk?", opts: ["En type kontrapunkt inspirert av Bach","Én stemme beveger seg trinnvis og én holder treklangen som klokkeslag","En tolvtoneteknikk","En type elektronisk komposisjon"], c:1, e:"Tintinnabuli (latin for bjeller): én stemme beveger seg trinnvis som melodi, mens en annen holder tonene fra treklangen." },
+      { q: "Hva er serialisme?", opts: ["En type minimalisme","Rekker av toner, rytmer og dynamikk organiseres matematisk","En stil inspirert av jazzimprov","Romantisk programmusikk"], c:1, e:"Serialisme (Boulez, Stockhausen) utvidet tolvtoneteknikken til å organisere ikke bare toner, men også rytme og dynamikk i strenge rekker." },
+      { q: "Hva er Pärts musikk kjent for?", opts: ["Kompleks polyfoni","Ekstrem enkelhet, sakral karakter og meditativ stemning","Energisk rytmisk driv og dissonans","Elektroniske virkemidler"], c:1, e:"Pärts musikk er kjent for sin enkelhet og ro. Den er dypt åndelig og sakral, inspirert av gregorianikk og ortodoks tradisjon." },
+      { q: "Hva var The Beatles viktigste bidrag til populærmusikken?", opts: ["De oppfant hip-hop","De brukte studio som komposisjonsverktøy og kombinerte pop med kunstambisjon","De introduserte elektronisk musikk","De skapte reggae"], c:1, e:"The Beatles utviklet studioteknikkene radikalt og smeltet populærmusikk med kunstmusikalske ambisjoner. Sgt. Peppers er det første konseptalbum." },
+      { q: "Hva er Philip Glass kjent for?", opts: ["Kompleks atonalmusikk","Minimalistisk musikk der repetitive mønstre gradvis endres","Romantiske symfonier","Fritonalitet og polytonalitet"], c:1, e:"Philip Glass er en av minimalismens sentrale skikkelser – repetitive mønstre som umerkelig endrer seg og skaper hypnotisk, meditativ virkning." },
+      { q: "Hva er diegetisk musikk i film?", opts: ["Musikk bare tilskuerne hører","Musikk som finnes i filmens verden og kan høres av karakterene","Musikk komponert for en scene","Musikk uten melodi"], c:1, e:"Diegetisk musikk eksisterer i filmens verden – karakterene kan høre den. Ikke-diegetisk musikk hører bare tilskuerne." },
+      { q: "Hva er Gorbmans prinsipp om at filmmusikken er uhørlig?", opts: ["At musikken er for dårlig til å legge merke til","At musikken glir inn umerkelig og tilpasser seg bilde og dialog","At musikken spilles for svakt","At musikken er uten melodi"], c:1, e:"Gorbmans prinsipp om uhørlig filmmusikk betyr at den glir inn umerkelig – inntrer ved sceneskift og emosjonell forandring, og viker alltid for dialogen." }
+    ]
+  }
+};
+
+// ── QUIZ STATE ────────────────────────────────────────────────────
+let qzEra = 'medieval';
+let qzIdx = 0;
+let qzScore = 0;
+let qzOrder = [];
+let qzAnswered = false;
+
+function qzShuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz(eraId) {
+  qzEra = eraId; qzIdx = 0; qzScore = 0; qzAnswered = false;
+  qzOrder = qzShuffle([...Array(quizData[eraId].questions.length).keys()]);
+  renderQuiz();
+}
+
+function renderQzPicker() {
+  const row = document.getElementById('qz-era-row');
+  if (!row) return;
+  row.innerHTML = Object.entries(quizData).map(([id, d]) => {
+    const act = id === qzEra ? ' active' : '';
+    const sty = id === qzEra ? 'border-color:' + d.accent + ';color:' + d.accent : '';
+    return '<button class="qz-era-btn' + act + '" style="' + sty + '" data-era="' + id + '">' + d.label + '</button>';
+  }).join('');
+  row.querySelectorAll('.qz-era-btn').forEach(btn => {
+    btn.addEventListener('click', function() { startQuiz(this.dataset.era); });
+  });
+}
+
+function renderQuiz() {
+  renderQzPicker();
+  const body = document.getElementById('qz-body');
+  if (!body) return;
+  const d = quizData[qzEra];
+  const total = qzOrder.length;
+
+  if (qzIdx >= total) {
+    const pct = Math.round(qzScore / total * 100);
+    const msg = pct === 100 ? 'Perfekt!' : pct >= 70 ? 'Bra jobba!' : 'Les litt mer og prøv igjen!';
+    body.innerHTML = '<div class="qz-result"><div class="score" style="color:' + d.accent + '">' + qzScore + '/' + total + '</div><p>' + msg + ' Du fikk ' + pct + '% rett på ' + d.label + '.</p><button class="qz-restart" id="qz-restart-btn">Prøv igjen ↺</button></div>';
+    document.getElementById('qz-restart-btn').addEventListener('click', function() { startQuiz(qzEra); });
+    return;
+  }
+
+  const qi = qzOrder[qzIdx];
+  const q = d.questions[qi];
+  qzAnswered = false;
+
+  // Shuffle the answer options while tracking which is correct
+  const optIndices = qzShuffle([0, 1, 2, 3]);
+  const shuffledOpts = optIndices.map(i => q.opts[i]);
+  const correctShuffled = optIndices.indexOf(q.c);
+
+  body.innerHTML =
+    '<div class="qz-header"><h2>' + d.label + '</h2><p>Velg riktig svar</p></div>' +
+    '<div class="qz-progress">Spørsmål ' + (qzIdx + 1) + ' av ' + total + ' &nbsp;·&nbsp; Poeng: ' + qzScore + '</div>' +
+    '<div class="qz-card">' +
+      '<div class="qz-q">' + q.q + '</div>' +
+      '<div class="qz-opts" id="qz-opts">' +
+        shuffledOpts.map((opt, i) => '<button class="qz-opt" data-i="' + i + '">' + opt + '</button>').join('') +
+      '</div>' +
+      '<div id="qz-fb"></div>' +
+    '</div>';
+
+  document.querySelectorAll('.qz-opt').forEach(btn => {
+    btn.addEventListener('click', function() {
+      if (qzAnswered) return;
+      qzAnswered = true;
+      const chosen = parseInt(this.dataset.i);
+      document.querySelectorAll('.qz-opt').forEach(b => b.classList.add('disabled'));
+      this.classList.add(chosen === correctShuffled ? 'correct' : 'wrong');
+      if (chosen !== correctShuffled) document.querySelector('.qz-opt[data-i="' + correctShuffled + '"]').classList.add('reveal');
+      if (chosen === correctShuffled) qzScore++;
+      const fb = document.getElementById('qz-fb');
+      fb.className = 'qz-explain ' + (chosen === correctShuffled ? 'correct' : 'wrong');
+      const nextLabel = qzIdx + 1 < total ? 'Neste spørsmål →' : 'Se resultatet →';
+      fb.innerHTML = (chosen === correctShuffled ? '✓ Riktig! ' : '✗ Feil. ') + q.e + '<br><button class="qz-next" id="qz-next-btn">' + nextLabel + '</button>';
+      document.getElementById('qz-next-btn').addEventListener('click', function() { qzIdx++; renderQuiz(); });
+    });
+  });
+}
+
+window.switchView = function(view) {
+  const views = { tl: 'view-tl', qz: 'view-qz', bg: 'view-bg' };
+  const tabs  = { tl: 'tab-tl',  qz: 'tab-qz',  bg: 'tab-bg'  };
+  Object.keys(views).forEach(k => {
+    const el = document.getElementById(views[k]);
+    const tb = document.getElementById(tabs[k]);
+    if (el) el.style.display = k === view ? '' : 'none';
+    if (tb) tb.classList.toggle('active', k === view);
+  });
+  if (view === 'qz') { if (!qzOrder.length) startQuiz(qzEra); else renderQuiz(); }
+  if (view === 'bg') renderBegreper();
+};
+
+window.toggleTheme = function() {
+  const html = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+  if (html.classList.contains('light')) {
+    html.classList.remove('light');
+    btn.textContent = '☀ Lys modus';
+    localStorage.setItem('theme', 'dark');
+  } else {
+    html.classList.add('light');
+    btn.textContent = '☾ Mørk modus';
+    localStorage.setItem('theme', 'light');
+  }
+};
+// Restore saved theme
+(function() {
+  if (localStorage.getItem('theme') === 'light') {
+    document.documentElement.classList.add('light');
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = '☾ Mørk modus';
+  }
+})();
+
+// ── BEGREPER DATA ─────────────────────────────────────────────────
+const begreper = [
+  // FORMER
+  { term: "Sonatesatsform", cat: "Former", short: "Tredelt form: eksposisjon – gjennomføring – rekapitulasjon", long: "Sonatesatsen er den viktigste instrumentale formen i wienerklassisismen. Eksposisjonen presenterer et kraftig hovedtema (HT) i grunntonarten og et mer lyrisk sidetema (ST) i en ny toneart. Gjennomføringen bearbeider temaene — fragmenterer, transponerer og modulerer gjennom fjerne tonearter. Rekapitulasjonen gjentar eksposisjonen, men nå i grunntonarten.", ex: "Eksempel: Beethoven, Symfoni nr. 5 — 1. sats" },
+  { term: "Fuge", cat: "Former", short: "Kontrapunktisk form der et tema imiteres i alle stemmer", long: "En fuge starter med at én stemme presenterer temaet (subjektet) alene. Deretter kommer neste stemme inn med temaet (svaret), mens den første spinner videre. Slik fortsetter det til alle stemmene er inne. Mellomdelene (divertimenti) mellom tema-inntredene er basert på motivisk bearbeiding av temaet.", ex: "Eksempel: Bach, Das Wohltemperierte Klavier — Fuge i C-dur" },
+  { term: "Rondoform", cat: "Former", short: "Et tilbakevendende omkveds-tema (A) veksler med episoder (B, C…)", long: "Rondoformen er bygd opp slik: A–B–A–C–A (eller lengre varianter). A-temaet kommer alltid tilbake i grunntonarten mellom de kontrasterende episodene. En sonaterondo kombinerer rondoprinsippet med sonatesatsens harmoniske logikk.", ex: "Eksempel: Haydn, Symfoni nr. 94 — 4. sats" },
+  { term: "Lied-former", cat: "Former", short: "Strofisk, variert strofisk eller gjennomkomponert", long: "Strofisk: alle strofer synges til samme melodi. Variert strofisk: melodien varieres i noen strofer for å følge tekstens skiftende stemning. Gjennomkomponert: musikken tilpasses teksten kontinuerlig — ingen strofer er like.", ex: "Strofisk: Schubert, Heidenröslein. Gjennomkomponert: Schubert, Erlkönig" },
+  { term: "ABA-form (liedform)", cat: "Former", short: "Tredelt form: A-del – kontrast B-del – gjentakelse av A", long: "ABA-formen (også kalt da capo-form) presenterer et tema (A), et kontrasterende midtparti (B) og gjentar deretter A. Brukes i arier, karakterstykker og langsomme satser.", ex: "Eksempel: Schubert, Impromptu op. 90 nr. 3" },
+  { term: "Tema med variasjoner", cat: "Former", short: "Et tema presenteres og forandres i en serie variasjoner", long: "Et enkelt tema presenteres tydelig, deretter endres det i en rekke variasjoner. Melodien kan ornamenteres, harmonikken kan endres, tempoet kan variere, og karakteren kan skifte fra dur til moll eller omvendt.", ex: "Eksempel: Haydn, Symfoni nr. 94 — 2. sats" },
+  { term: "12-takters blues", cat: "Former", short: "Jazzens og rockens grunnleggende akkordskjema", long: "Blues-formen er 12 takter lang og bruker akkordene I (tonika), IV (subdominant) og V (dominant). Det vanligste skjemaet er: I–I–I–I / IV–IV–I–I / V–IV–I–V. Solisten improviserer over dette skjemaet. Bluesformen er grunnlaget for rock'n'roll, jazz og mye av populærmusikken.", ex: "Eksempel: Robert Johnson, Sweet Home Chicago" },
+  // BEGREPER
+  { term: "Generalbass", cat: "Begreper", short: "Akkompagnerende basslinje med besifring — grunnprinsipp i barokken", long: "Generalbass (basso continuo) er en basslinje der akkordene angis som tall (besifring) over notene. Utøveren (cembalo, orgel, lutt) fyller ut harmonikken etter disse tallene. Generalbassen er til stede i praktisk talt all barokkmusikk og utgjør et fast harmonisk fundament.", ex: "Eksempel: Bach, Kantate nr. 140 — Basso continuo-stemmen" },
+  { term: "Kontrapunkt", cat: "Begreper", short: "Kunsten å kombinere to eller flere selvstendige melodilinjer", long: "I kontrapunkt beveger stemmene seg uavhengig av hverandre, men i harmonisk samklang. Det finnes strenge regler for hvilke intervaller som er tillatt, og hvordan dissonanser skal forberedes og løses. Bach er kontrapunktets fremste mester.", ex: "Eksempel: Bach, Inventioner for cembalo" },
+  { term: "Affektlære", cat: "Begreper", short: "Barokkens ide om at musikken skal uttrykke én grunnfølelse per avsnitt", long: "Affektlæren sier at et musikalsk avsnitt skal formidle én bestemt grunnfølelse (affekt) — sorg, glede, sinne, kjærlighet. Instrumentene velges ut fra hvilken affekt de best kan formidle: fioliner for kjærlighet, trompeter for triumf, blokkfløyte for pastoral stemning.", ex: "Eksempel: Bach bruker obo for sorg i Matteuspasjonen" },
+  { term: "Polyfoni", cat: "Begreper", short: "Flerstemmig musikk der stemmene er selvstendige og likeverdige", long: "I polyfon musikk beveger to eller flere stemmer seg uavhengig av hverandre. Renessansens vokalpolyfoni og Bachs fugaer er de fremste eksemplene. I motsetning til homofoni der én stemme leder og de andre akkompagnerer.", ex: "Eksempel: Palestrina, Missa Papae Marcelli" },
+  { term: "Homofoni", cat: "Begreper", short: "Én melodistemme over akkompagnement — standard i klassisisme og romantikk", long: "I homofon musikk er det én tydelig melodistemme som bærer musikken, mens de andre stemmene akkompagnerer. Dette er standarden i wienerklassisismens musikk og i det meste av populærmusikk. Motsetningen er polyfoni.", ex: "Eksempel: Haydn, Symfoni nr. 94 — 1. sats" },
+  { term: "Modalitet", cat: "Begreper", short: "Kirketoneartene — skalaer fra middelalder og renessanse", long: "Kirketoneartene er skalaer som ikke er dur eller moll: dorisk (likner moll med hevet 6. trinn), frygisk (likner moll med senket 2. trinn), lydisk (likner dur med hevet 4. trinn), mixolydisk (likner dur med senket 7. trinn). Brukes i gregoriansk sang, renessansemusikk og folkemusikk.", ex: "Eksempel: Gregoriansk sang bruker kirketoneartene" },
+  { term: "Kromatikk", cat: "Begreper", short: "Bruk av halvtoner utenfor skalaen — sentralt i romantikken", long: "Kromatikk betyr å bruke toner som ikke tilhører den aktuelle skalaen. I romantikken brukes kromatikk for å skape rikere harmonikk, spenne og lengsel. Wagner drev dette til det ytterste i Tristan und Isolde der musikken nesten aldri hviler i tonika.", ex: "Eksempel: Wagner, Tristan und Isolde — Forspillet" },
+  { term: "Ledemotiv", cat: "Begreper", short: "Kort motiv knyttet til en person, idé eller sted — brukt av Wagner", long: "Et ledemotiv er et kort, gjenkjennelig musikalsk motiv som knyttes til en bestemt person, gjenstand, følelse eller idé. Når personen eller idéen dukker opp i handlingen, høres motivet i orkesteret. Wagner utviklet dette til et avansert system med hundrevis av ledemotiver i Ring-syklusen.", ex: "Eksempel: Ringens motiv i Der Ring des Nibelungen" },
+  { term: "Ordmaleri", cat: "Begreper", short: "Musikken etterligner hva ordene beskriver", long: "Ordmaleri (word painting) betyr at musikken illustrerer tekstens innhold direkte: melodien synker på ord som 'dø' eller 'fall', stiger på ord som 'himmelen', raske noter imiterer løping. Vanligst i renessansens madrigaler og barokkens vokalmusikk.", ex: "Eksempel: Madrigaler av Monteverdi og Gesualdo" },
+  { term: "Improvisasjon", cat: "Begreper", short: "Spontan musikalsk skapelse — sentralt i jazz og folkemusikk", long: "Improvisasjon betyr å skape musikken der og da, uten forhåndsskrevet partitur. I jazz improviserer solisten over et fast akkordskjema. Stilen og vokabularet er innøvd, men det eksakte forløpet er spontant. Improvisasjon var også viktig i barokken (ornamentikk og generalbasskompet).", ex: "Eksempel: Miles Davis, Kind of Blue — modalimprovisasjon" },
+  { term: "Blåtoner (blue notes)", cat: "Begreper", short: "Senkede toner fra bluesskalaen — gir jazz og blues sin særegne klang", long: "Blåtoner er toner som er litt lavere enn i dur-skalaen — særlig den senkede tertsen, septimen og kvinten. De stammer fra afroamerikansk sangmønster der det harmoniske systemet fra Europa møtte afrikansk vokaltradisjon. Blåtonene gir blues og jazz sin karakteristiske melankolske og ekspressive klang.", ex: "Eksempel: B.B. King, The Thrill Is Gone" },
+  { term: "Synkopering", cat: "Begreper", short: "Betoningen forskyves fra sterke til svake taktslag", long: "I vanlig musikk faller betoningen på de sterke taktslагene (1 og 3 i 4/4-takt). Synkopering betyr å flytte betoningen til de svake taktslагene (2 og 4) eller midt mellom to slag. Dette er grunnleggende i jazz, blues og rock — det gir musikken sving og energi.", ex: "Eksempel: Scott Joplin, Maple Leaf Rag — ragtime-synkopering" },
+  { term: "Atonalitet", cat: "Begreper", short: "Musikk uten tonalt sentrum — ingen tone er tonika", long: "I atonal musikk er alle 12 toner likestilte — ingen oppfatter vi som hjemmetone. Musikken hviler aldri, er alltid i bevegelse. Schoenberg utviklet tolvtoneteknikken som et system for å organisere atonal musikk. Atonalitet var et av de mest radikale bruddene i musikkhistorien.", ex: "Eksempel: Schoenberg, Pierrot Lunaire" },
+  { term: "Periodisk form", cat: "Begreper", short: "Symmetriske fraser av typen spørsmål og svar", long: "Periodisk form betyr at melodien er bygd av symmetriske fraser: forsetningen (spørsmål) og ettersetningen (svar). Forsetningen slutter på en halvkadense (ufullstendig), ettersetningen slutter på en helkadense (fullstendig). Dette er grunnprinsippet i wienerklassisismens melodikk.", ex: "Eksempel: Mozart, Eine kleine Nachtmusik — 1. sats" }
+];
+
+let bgCat = 'Alle';
+let openTerm = null;
+const bgCats = ['Alle', 'Former', 'Begreper'];
+
+function renderBegreper() {
+  const c = document.getElementById('bg-content');
+  if (!c) return;
+  const filtered = bgCat === 'Alle' ? begreper : begreper.filter(b => b.cat === bgCat);
+  const catBtns = bgCats.map(cat => {
+    const act = cat === bgCat ? ' active" style="border-color:#c8a96a;color:#c8a96a' : '';
+    return '<button class="bg-cat-btn' + act + '" data-cat="' + cat + '">' + cat + '</button>';
+  }).join('');
+  const cards = filtered.map(b => {
+    const isOpen = b.term === openTerm ? ' open' : '';
+    return '<div class="bg-card' + isOpen + '" data-term="' + b.term + '">' +
+      '<div class="bg-cat">' + b.cat + '</div>' +
+      '<div class="bg-term">' + b.term + '</div>' +
+      '<div class="bg-short">' + b.short + '</div>' +
+      '<div class="bg-long">' + b.long + '<div class="bg-ex">' + b.ex + '</div></div>' +
+    '</div>';
+  }).join('');
+  c.innerHTML =
+    '<div style="margin-bottom:1rem"><div class="years-badge" style="background:rgba(200,169,106,0.12);color:#c8a96a">Musikalske former og begreper</div>' +
+    '<h2 style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;margin-top:8px;margin-bottom:6px">Begrepsordbok</h2>' +
+    '<p style="font-size:14px;color:var(--muted);font-weight:300;margin-bottom:1.5rem">Klikk på et begrep for full forklaring og eksempel.</p></div>' +
+    '<div class="bg-cats">' + catBtns + '</div>' +
+    '<div class="bg-grid">' + cards + '</div>';
+  c.querySelectorAll('.bg-cat-btn').forEach(btn => {
+    btn.addEventListener('click', function() { bgCat = this.dataset.cat; openTerm = null; renderBegreper(); });
+  });
+  c.querySelectorAll('.bg-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const term = this.dataset.term;
+      openTerm = openTerm === term ? null : term;
+      renderBegreper();
+    });
+  });
+}
+
+renderNav();
+renderMain();
+</script>
+</body>
+</html>
