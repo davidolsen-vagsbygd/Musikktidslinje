@@ -131,6 +131,73 @@
   .qz-result p { font-size: 15px; color: var(--muted); margin-bottom: 2rem; font-weight: 300; }
   .qz-restart { padding: 11px 24px; font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500; border: 0.5px solid var(--border-hover); border-radius: 8px; background: var(--surface); color: var(--text); cursor: pointer; }
   .qz-restart:hover { background: var(--hover-bg); }
+
+  .sidebar {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-right: none;
+    border-radius: 12px 0 0 12px;
+    padding: 1rem 1rem 1rem 1rem;
+    z-index: 50;
+    max-height: 80vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+  .sidebar-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--faint);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .sidebar-section { margin-bottom: 12px; }
+  .sidebar-era {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--faint);
+    margin-bottom: 5px;
+    margin-top: 10px;
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    text-decoration: none;
+    font-size: 11.5px;
+    color: var(--muted);
+    padding: 4px 0;
+    line-height: 1.4;
+    transition: color .15s;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .sidebar-link:last-child { border-bottom: none; }
+  .sidebar-link:hover { color: var(--text); }
+  .sidebar-link::before { content: "↗"; flex-shrink: 0; font-size: 10px; margin-top: 2px; color: var(--faint); }
+  .sidebar-folder {
+    display: block;
+    margin-top: 12px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    text-align: center;
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: all .15s;
+  }
+  .sidebar-folder:hover { border-color: var(--border-hover); color: var(--text); }
+  @media (max-width: 1280px) { .sidebar { display: none; } }
 </style>
 </head>
 <body>
@@ -160,6 +227,45 @@
 <div id="view-bg" style="display:none">
   <div id="bg-content"></div>
 </div>
+<aside class="sidebar">
+  <div class="sidebar-title">Lær mer — ressurser</div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-era">Middelalder</div>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/19f3jybamZ8avLPjbN9rC0p3DWfpEu8cj/view" target="_blank">Gregoriansk sang</a>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1QJaTjdZZ-jLfihFmsmWVRa_xUs8YNwBD/view" target="_blank">Komponister i middelalderen</a>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1ROLmOGGNFsMP-78vqQfiHez1vRyBI_61/view" target="_blank">Kronologi middelalder & renessanse</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-era">Renessanse</div>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1UcK4RBJLIw1kIu9G9z0-hz5Y2tN1onc8/view" target="_blank">Renessansen — historikk og stiltrekk</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-era">Barokk</div>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/10M7FxU3Nu-uSpfaACcG7WPgAAEhhbeV3/view" target="_blank">Barokken — 1600-tallet</a>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1rmdqlSTQM0LrOSdy44VJFZ2-Z1x8earH/view" target="_blank">Bach</a>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/17JH14FmjpWawOHfGI14O4poTo3cuuOnp/view" target="_blank">Händel</a>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1Y0BdnxH03OOoPOLeXHTbZMk0tn7ONgKG/view" target="_blank">Vivaldi</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-era">Wienerklassisisme</div>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1jdk2h-Y9sAqIedK0YDktlioClErHGjA5/view" target="_blank">Wienerklassisismen</a>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1leIdDn5WurbMO8QCcKJkVmigkB9CPO2w/view" target="_blank">Haydn</a>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1qLVbYMlIONEtNYXcGJE4xx5CJqKTJ0ox/view" target="_blank">Mozart</a>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1gcL6iYr-evmTBTcqwF43-LwyxE49u-8H/view" target="_blank">Beethoven</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-era">Romantikk</div>
+    <a class="sidebar-link" href="https://drive.google.com/file/d/1IpdYg8s5WLCteYhdU3JZ1sCChDKNcJCc/view" target="_blank">Romantikken — stiltrekk</a>
+  </div>
+
+  <a class="sidebar-folder" href="https://drive.google.com/drive/folders/1xhoPdx-9mPw6fgzuOMFjGcLZ8grJDlZW" target="_blank">Åpne alle ressurser ↗</a>
+</aside>
+
 <footer>Musikkhistorie · Undervisningsressurs</footer>
 
 <script>
