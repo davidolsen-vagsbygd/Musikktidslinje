@@ -198,6 +198,8 @@
   }
   .sidebar-folder:hover { border-color: var(--border-hover); color: var(--text); }
   @media (max-width: 1280px) { .sidebar { display: none; } }
+  @keyframes tts-pulse { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
+  #tts-btn.reading { animation: tts-pulse 1.5s ease-in-out infinite; color: var(--text); border-color: var(--border-hover); }
 </style>
 </head>
 <body>
@@ -1059,6 +1061,7 @@ function renderNav() {
 }
 
 function renderMain() {
+  stopTTS();
   const era = eras[activeIdx];
   const content = document.getElementById('main-content');
 
@@ -1105,7 +1108,10 @@ function renderMain() {
   content.innerHTML = `
     <div class="era-header">
       <div class="years-badge" style="background:${era.badgeBg};color:${era.badgeText}">${era.years}</div>
-      <h2>${era.label}</h2>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+        <h2 style="margin-bottom:0">${era.label}</h2>
+        <button id="tts-btn" onclick="toggleTTS()" title="Les opp epoketeksten" style="flex-shrink:0;padding:5px 12px;font-size:11px;font-family:'DM Sans',sans-serif;background:var(--card);border:0.5px solid var(--border);border-radius:20px;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;">▶ Les opp</button>
+      </div>
       <p class="summary">${era.summary}</p>
     </div>
     <div class="two-col">${infoCols}</div>
@@ -1366,6 +1372,7 @@ function renderQuiz() {
 }
 
 window.switchView = function(view) {
+  if (typeof stopTTS === 'function') stopTTS();
   const views = { tl: 'view-tl', qz: 'view-qz', bg: 'view-bg' };
   const tabs  = { tl: 'tab-tl',  qz: 'tab-qz',  bg: 'tab-bg'  };
   Object.keys(views).forEach(k => {
@@ -1465,6 +1472,49 @@ function renderBegreper() {
     });
   });
 }
+
+// ── TEXT TO SPEECH ─────────────────────────────────────────────
+let ttsReading = false;
+let ttsKeepAlive = null;
+
+function stopTTS() {
+  if (ttsKeepAlive) { clearInterval(ttsKeepAlive); ttsKeepAlive = null; }
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  ttsReading = false;
+  const btn = document.getElementById('tts-btn');
+  if (btn) { btn.textContent = '▶ Les opp'; btn.classList.remove('reading'); }
+}
+
+function getTTSText() {
+  if (document.getElementById('view-tl').style.display !== 'none') {
+    const summary = document.querySelector('#main-content .summary');
+    return summary ? summary.innerText : '';
+  }
+  if (document.getElementById('view-qz').style.display !== 'none')
+    return (document.getElementById('qz-body') || {}).innerText || '';
+  return (document.getElementById('bg-content') || {}).innerText || '';
+}
+
+window.toggleTTS = function() {
+  if (!('speechSynthesis' in window)) { alert('Nettleseren din støtter ikke opplesning.'); return; }
+  if (ttsReading) { stopTTS(); return; }
+  const text = getTTSText().trim();
+  if (!text) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'nb-NO';
+  utt.rate = 0.95;
+  utt.onend = utt.onerror = stopTTS;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utt);
+  ttsReading = true;
+  ttsKeepAlive = setInterval(function() {
+    if (!window.speechSynthesis.speaking) { clearInterval(ttsKeepAlive); return; }
+    window.speechSynthesis.pause();
+    window.speechSynthesis.resume();
+  }, 10000);
+  const btn = document.getElementById('tts-btn');
+  if (btn) { btn.textContent = '■ Stopp'; btn.classList.add('reading'); }
+};
 
 renderNav();
 renderMain();
