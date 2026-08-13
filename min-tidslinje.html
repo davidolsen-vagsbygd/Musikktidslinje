@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Musikkhistorisk tidslinje</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink: #14151c;
+    --ink-alt: #1c1e29;
+    --parchment: #ece2c6;
+    --parchment-dim: #9a917c;
+    --brass: #c9a24b;
+    --brass-bright: #e6c574;
+    --wax: #a8493d;
+    --wax-bright: #c65f52;
+    --line-soft: rgba(201,162,75,.28);
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    background: radial-gradient(ellipse at 15% 0%, #1a1c26 0%, var(--ink) 55%);
+    color: var(--parchment);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page{ max-width: 1200px; margin: 0 auto; padding: 56px 28px 120px; }
+
+  .masthead{ margin-bottom: 44px; }
+  .eyebrow{
+    font-family:'Inter',sans-serif; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+    font-size:12px; color:var(--brass); margin:0 0 14px;
+  }
+  h1{
+    font-family:'Cormorant Garamond', serif; font-weight:600; font-size: clamp(32px,4.6vw,50px);
+    margin:0 0 16px; color:var(--parchment); line-height:1.05;
+  }
+  .lede{ font-size:16px; line-height:1.6; color:var(--parchment-dim); max-width:66ch; margin:0 0 24px; }
+
+  .toolbar{ display:flex; align-items:flex-end; gap:28px; flex-wrap:wrap; }
+  .student-field{ display:flex; flex-direction:column; gap:6px; }
+  .student-field label{ font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--brass); }
+  .student-field input{
+    background:transparent; border:none; border-bottom:1px solid #3a3c4a; color:var(--parchment);
+    font-family:'Cormorant Garamond', serif; font-size:20px; padding:2px 2px 6px; min-width:220px;
+  }
+  .student-field input::placeholder{ color:var(--parchment-dim); font-style:italic; font-size:15px; }
+  .student-field input:focus{ outline:none; border-bottom-color:var(--brass); }
+
+  .actions{ display:flex; gap:12px; flex-wrap:wrap; margin-left:auto; }
+  .btn{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px; padding:11px 20px; border-radius:3px;
+    border:1px solid transparent; cursor:pointer; transition: transform .12s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn-primary{ background:var(--brass); color:#1b1508; }
+  .btn-primary:hover{ background:var(--brass-bright); }
+  .btn-ghost{ background:transparent; color:var(--parchment-dim); border-color:#3a3c4a; }
+  .btn-ghost:hover{ color:var(--parchment); border-color:var(--brass); }
+  .btn-pdf{ background:transparent; color:var(--brass); border-color:var(--brass); }
+  .btn-pdf:hover{ background:var(--brass); color:#1b1508; }
+  .btn:focus-visible{ outline:2px solid var(--brass-bright); outline-offset:2px; }
+  .pdf-hint{ width:100%; font-size:12px; color:var(--parchment-dim); margin-top:6px; }
+
+  .scroll-area{ overflow-x:auto; overflow-y:visible; padding-bottom:10px; margin-top:20px; }
+  .scroll-area::-webkit-scrollbar{ height:10px; }
+  .scroll-area::-webkit-scrollbar-track{ background:#1a1c26; }
+  .scroll-area::-webkit-scrollbar-thumb{ background:#3a3c4a; border-radius:5px; }
+
+  .timeline-inner{ position:relative; }
+
+  .axis-row{
+    position:relative; height:92px; cursor:crosshair; min-width:100%;
+  }
+  .axis-line{
+    position:absolute; top:58px; left:0; right:0; height:2px;
+    background: linear-gradient(to right, transparent, var(--brass) 2%, var(--brass) 98%, transparent);
+    pointer-events:none;
+  }
+  .tick{ position:absolute; top:58px; pointer-events:none; }
+  .tick.major .tick-mark{ position:absolute; top:-16px; width:2px; height:16px; background:var(--brass); left:-1px; }
+  .tick.minor .tick-mark{ position:absolute; top:-8px; width:1px; height:8px; background:var(--line-soft); left:0; }
+  .tick-label{
+    position:absolute; top:-40px; left:50%; transform:translateX(-50%); white-space:nowrap;
+    font-size:11px; font-weight:600; color:var(--parchment-dim); letter-spacing:.02em;
+  }
+
+  .empty-hint{
+    position:absolute; top:70px; left:12px; white-space:nowrap; pointer-events:none;
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-size:18px; color:var(--brass-bright);
+    line-height:1.3; opacity:.9;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .axis-row.is-empty .axis-line{ animation: pulseLine 2.6s ease-in-out infinite; }
+  }
+  @keyframes pulseLine{ 0%,100%{ opacity:1; } 50%{ opacity:.45; } }
+
+  .connectors{ position:absolute; top:0; left:0; overflow:visible; pointer-events:none; }
+  .connectors path{ fill:none; stroke:var(--line-soft); stroke-width:1.4; }
+  .connectors circle{ fill:var(--brass); }
+  .connectors circle.card-dot{ fill:var(--ink); stroke:var(--brass); stroke-width:1.4; }
+
+  .cards-row{
+    display:flex; align-items:flex-start; gap:26px; padding:44px 40px 10px 8px;
+  }
+
+  .era-card{
+    position:relative; background:var(--ink-alt); border:1px solid #2c2e3b; border-radius:6px;
+    padding:18px 19px 20px; box-shadow: var(--shadow); width:270px; flex:0 0 270px;
+  }
+  .card-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:8px; }
+  .years{ display:flex; align-items:center; gap:6px; font-family:'Cormorant Garamond', serif; }
+  .year-input{
+    width:56px; background:transparent; border:none; border-bottom:1px solid #3a3c4a;
+    color:var(--brass-bright); font-family:'Cormorant Garamond', serif; font-weight:600; font-size:20px;
+    padding:2px 2px 3px; text-align:center;
+  }
+  .year-input::placeholder{ color:var(--parchment-dim); font-style:italic; font-size:13px; }
+  .year-input:focus{ outline:none; border-bottom-color:var(--brass); }
+  .year-sep{ color:var(--parchment-dim); font-family:'Cormorant Garamond', serif; font-size:18px; }
+
+  .del-btn{
+    background:transparent; border:1px solid #3a3c4a; color:var(--parchment-dim);
+    width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:12px; line-height:1;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .del-btn:hover{ border-color:var(--wax); color:var(--wax-bright); }
+  .del-btn:focus-visible{ outline:2px solid var(--brass-bright); outline-offset:2px; }
+
+  .era-name{
+    font-family:'Cormorant Garamond', serif; font-weight:600; font-size:23px; color:var(--parchment);
+    margin:2px 0 14px; outline:none; min-height:1.3em; line-height:1.25;
+  }
+  .era-name:empty:before{ content: attr(data-placeholder); color:var(--parchment-dim); font-style:italic; }
+  .era-name:focus{ color:var(--brass-bright); }
+
+  .field-group{ margin-top:12px; }
+  .field-group label{
+    display:block; font-size:10.5px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--brass); margin-bottom:5px;
+  }
+  .field-group [contenteditable]{
+    font-size:14px; line-height:1.5; color:var(--parchment); outline:none; white-space:pre-wrap; min-height:1.4em;
+  }
+  .field-group [contenteditable]:empty:before{ content: attr(data-placeholder); color:var(--parchment-dim); font-style:italic; }
+
+  .footer-note{ margin-top:16px; font-size:12.5px; color:var(--parchment-dim); max-width:66ch; }
+
+  @media (max-width:640px){
+    .page{ padding:36px 16px 100px; }
+    .actions{ margin-left:0; }
+    .era-card{ width:220px; flex:0 0 220px; }
+    .era-name{ font-size:20px; }
+  }
+
+  /* ---------- PRINT / PDF ---------- */
+  @media print{
+    @page{ size: landscape; margin: 10mm; }
+
+    html, body{
+      background: var(--ink) !important;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    *{ -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    .page{ max-width:none; padding:14px 18px; }
+    .lede{ display:none; }
+    .actions{ display:none !important; }
+    .toolbar{ align-items:flex-start; }
+
+    .print-header{ display:block !important; margin:2px 0 14px; }
+
+    .scroll-area{ overflow: visible !important; margin-top:10px; }
+    .timeline-inner{ transform-origin: top left; }
+
+    .era-card{ box-shadow:none !important; break-inside: avoid; page-break-inside: avoid; }
+    .del-btn{ display:none !important; }
+    .year-input{ pointer-events:none; }
+    .footer-note{ display:none !important; }
+  }
+  .print-header{ display:none; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <p class="eyebrow">VG3 Musikk · Musikkhistorie</p>
+    <h1>Din musikkhistoriske tidslinje</h1>
+    <p class="lede">Klikk hvor som helst på linjen for å markere et årstall. Skriv inn navnet på epoken, viktige komponister og stiltrekk som kjennetegner perioden. Alt lagres automatisk i denne nettleseren.</p>
+
+    <div class="print-header">
+      <p style="font-family:'Cormorant Garamond',serif; font-size:22px; margin:0 0 4px;">Musikkhistorisk tidslinje</p>
+      <p style="font-size:13px; color:#555; margin:0;" id="printMeta"></p>
+    </div>
+
+    <div class="toolbar">
+      <div class="student-field">
+        <label for="studentName">Elevens navn</label>
+        <input type="text" id="studentName" placeholder="Skriv navnet ditt her">
+      </div>
+      <div class="actions">
+        <button id="addBtn" class="btn btn-primary">+ Ny periode</button>
+        <button id="pdfBtn" class="btn btn-pdf">Last ned som PDF</button>
+        <button id="resetBtn" class="btn btn-ghost">Nullstill</button>
+        <p class="pdf-hint">Velg «Lagre som PDF» som skriver i vinduet som åpnes.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="scroll-area">
+    <div class="timeline-inner" id="inner">
+      <div class="axis-row" id="axisRow">
+        <div class="axis-line"></div>
+        <div class="ticks" id="ticks"></div>
+        <div class="empty-hint" id="emptyHint">Klikk her for å legge til en periode →</div>
+      </div>
+      <svg class="connectors" id="connectors"></svg>
+      <div class="cards-row" id="cardsRow"></div>
+    </div>
+  </div>
+
+  <p class="footer-note">Tips: skriv inn tall direkte i årstallfeltene. Kortene sorteres automatisk etter startår. Bruk «Last ned som PDF» når tidslinjen er ferdig utfylt, for å levere den til læreren.</p>
+</div>
+
+<script>
+(function(){
+  const KEY = 'musikkhistorie-tidslinje-v1';
+  const YEAR_MIN = 800;
+
+  const inner = document.getElementById('inner');
+  const axisRow = document.getElementById('axisRow');
+  const ticksEl = document.getElementById('ticks');
+  const cardsRow = document.getElementById('cardsRow');
+  const connectors = document.getElementById('connectors');
+  const emptyHint = document.getElementById('emptyHint');
+  const addBtn = document.getElementById('addBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const pdfBtn = document.getElementById('pdfBtn');
+  const studentNameInput = document.getElementById('studentName');
+  const printMeta = document.getElementById('printMeta');
+
+  let state = loadState();
+  let entries = state.entries;
+  studentNameInput.value = state.studentName || '';
+  let layoutQueued = false;
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(!raw) return { studentName:'', entries:[] };
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed)) return { studentName:'', entries: parsed };
+      return { studentName: parsed.studentName || '', entries: Array.isArray(parsed.entries) ? parsed.entries : [] };
+    }catch(e){ return { studentName:'', entries:[] }; }
+  }
+
+  function saveState(){
+    try{
+      localStorage.setItem(KEY, JSON.stringify({ studentName: studentNameInput.value, entries }));
+    }catch(e){}
+  }
+
+  function esc(s){
+    return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+
+  function uid(){ return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+  function currentYearMax(){
+    let max = new Date().getFullYear();
+    entries.forEach(e => {
+      const y = (e.yearTo !== null && e.yearTo !== undefined && e.yearTo !== '') ? Number(e.yearTo) : Number(e.yearFrom);
+      if(!isNaN(y) && y > max) max = y;
+    });
+    return max + 8;
+  }
+
+  function addEntry(year){
+    const entry = { id: uid(), yearFrom: Math.round(year), yearTo: null, name:'', composers:'', traits:'' };
+    entries.push(entry);
+    render();
+    requestAnimationFrame(() => {
+      const nameEl = cardsRow.querySelector(`[data-id="${entry.id}"] .era-name`);
+      if(nameEl) nameEl.focus();
+    });
+  }
+
+  function removeEntry(id){
+    entries = entries.filter(e => e.id !== id);
+    render();
+  }
+
+  function render(){
+    entries.sort((a,b) => Number(a.yearFrom) - Number(b.yearFrom));
+    axisRow.classList.toggle('is-empty', entries.length === 0);
+    emptyHint.style.display = entries.length === 0 ? 'block' : 'none';
+
+    cardsRow.innerHTML = entries.map(e => `
+      <article class="era-card" data-id="${e.id}">
+        <div class="card-head">
+          <div class="years">
+            <input type="number" class="year-input year-from" value="${e.yearFrom}" aria-label="Fra år" data-field="yearFrom">
+            <span class="year-sep">–</span>
+            <input type="number" class="year-input year-to" placeholder="i dag" value="${e.yearTo ?? ''}" aria-label="Til år, valgfritt" data-field="yearTo">
+          </div>
+          <button class="del-btn" aria-label="Slett periode" title="Slett periode">✕</button>
+        </div>
+        <h3 class="era-name" contenteditable="true" data-placeholder="Navn på epoke …" data-field="name">${esc(e.name)}</h3>
+        <div class="field-group">
+          <label>Viktige komponister</label>
+          <div contenteditable="true" data-placeholder="F.eks. Bach, Mozart, Beethoven …" data-field="composers">${esc(e.composers)}</div>
+        </div>
+        <div class="field-group">
+          <label>Stiltrekk</label>
+          <div contenteditable="true" data-placeholder="Kjennetegn ved musikken i perioden …" data-field="traits">${esc(e.traits)}</div>
+        </div>
+      </article>
+    `).join('');
+
+    saveState();
+    updatePrintMeta();
+    scheduleLayout();
+    observeCards();
+  }
+
+  function updatePrintMeta(){
+    const name = studentNameInput.value.trim();
+    const dateStr = new Date().toLocaleDateString('nb-NO', { year:'numeric', month:'long', day:'numeric' });
+    printMeta.textContent = (name ? 'Elev: ' + name + '  ·  ' : '') + dateStr;
+  }
+
+  let resizeObserver = null;
+  function observeCards(){
+    if(resizeObserver) resizeObserver.disconnect();
+    resizeObserver = new ResizeObserver(() => scheduleLayout());
+    cardsRow.querySelectorAll('.era-card').forEach(c => resizeObserver.observe(c));
+  }
+
+  function scheduleLayout(){
+    if(layoutQueued) return;
+    layoutQueued = true;
+    requestAnimationFrame(() => { layoutQueued = false; layout(); });
+  }
+
+  function roundUpToStep(n, step){ return Math.ceil(n/step)*step; }
+
+  function layout(){
+    const viewportWidth = inner.parentElement.clientWidth;
+    const cardsWidth = Math.max(cardsRow.scrollWidth, 1);
+    const totalWidth = Math.max(viewportWidth - 2, cardsWidth);
+
+    inner.style.width = totalWidth + 'px';
+    axisRow.style.width = totalWidth + 'px';
+
+    const YEAR_MAX = currentYearMax();
+    const span = Math.max(1, YEAR_MAX - YEAR_MIN);
+
+    ticksEl.innerHTML = '';
+    const majorStep = 100, minorStep = 50;
+    for(let y = roundUpToStep(YEAR_MIN, minorStep); y <= YEAR_MAX; y += minorStep){
+      const left = ((y - YEAR_MIN) / span) * totalWidth;
+      const isMajor = y % majorStep === 0;
+      const el = document.createElement('div');
+      el.className = 'tick ' + (isMajor ? 'major' : 'minor');
+      el.style.left = left + 'px';
+      el.innerHTML = isMajor
+        ? `<span class="tick-label">${y}</span><span class="tick-mark"></span>`
+        : `<span class="tick-mark"></span>`;
+      ticksEl.appendChild(el);
+    }
+
+    const innerRect = inner.getBoundingClientRect();
+    const axisLineY = axisRow.getBoundingClientRect().top - innerRect.top + 59;
+
+    connectors.setAttribute('width', totalWidth);
+    connectors.setAttribute('height', Math.max(inner.scrollHeight, 200));
+    let svgParts = [];
+
+    entries.forEach(e => {
+      const cardEl = cardsRow.querySelector(`[data-id="${e.id}"]`);
+      if(!cardEl) return;
+      const cardRect = cardEl.getBoundingClientRect();
+      const cardX = cardRect.left - innerRect.left + (cardRect.width/2);
+      const cardTopY = cardRect.top - innerRect.top;
+
+      const tickX = ((Number(e.yearFrom) - YEAR_MIN) / span) * totalWidth;
+      const midY = axisLineY + (cardTopY - axisLineY) * 0.5;
+
+      svgParts.push(`<path d="M ${tickX} ${axisLineY} C ${tickX} ${midY}, ${cardX} ${midY}, ${cardX} ${cardTopY}" />`);
+      svgParts.push(`<circle cx="${tickX}" cy="${axisLineY}" r="3.2" />`);
+      svgParts.push(`<circle class="card-dot" cx="${cardX}" cy="${cardTopY}" r="3.2" />`);
+    });
+
+    connectors.innerHTML = svgParts.join('');
+  }
+
+  // interactions
+  axisRow.addEventListener('click', (ev) => {
+    const rect = inner.getBoundingClientRect();
+    const x = ev.clientX - rect.left;
+    const totalWidth = Math.max(inner.clientWidth, 1);
+    const YEAR_MAX = currentYearMax();
+    const span = Math.max(1, YEAR_MAX - YEAR_MIN);
+    let year = YEAR_MIN + (x / totalWidth) * span;
+    year = Math.round(year / 5) * 5;
+    year = Math.max(YEAR_MIN, Math.min(YEAR_MAX, year));
+    addEntry(year);
+  });
+
+  addBtn.addEventListener('click', () => {
+    const last = entries[entries.length - 1];
+    const year = last ? Number(last.yearFrom) + 50 : 1750;
+    addEntry(Math.min(year, currentYearMax()));
+  });
+
+  resetBtn.addEventListener('click', () => {
+    if(entries.length === 0) return;
+    if(confirm('Er du sikker på at du vil slette hele tidslinjen? Dette kan ikke angres.')){
+      entries = [];
+      render();
+    }
+  });
+
+  pdfBtn.addEventListener('click', () => {
+    updatePrintMeta();
+    window.print();
+  });
+
+  function beforePrint(){
+    updatePrintMeta();
+    const scrollArea = document.querySelector('.scroll-area');
+    const fullWidth = inner.scrollWidth;
+    const fullHeight = inner.scrollHeight;
+    const availableWidth = 1030; // ~ printable width in px for A4 landscape minus margins
+    const scale = Math.min(1, availableWidth / fullWidth);
+    inner.style.transformOrigin = 'top left';
+    inner.style.transform = `scale(${scale})`;
+    scrollArea.style.height = (fullHeight * scale) + 'px';
+  }
+
+  function afterPrint(){
+    inner.style.transform = '';
+    document.querySelector('.scroll-area').style.height = '';
+  }
+
+  window.addEventListener('beforeprint', beforePrint);
+  window.addEventListener('afterprint', afterPrint);
+
+  cardsRow.addEventListener('click', (ev) => {
+    const del = ev.target.closest('.del-btn');
+    if(del){
+      const card = ev.target.closest('.era-card');
+      removeEntry(card.dataset.id);
+    }
+  });
+
+  cardsRow.addEventListener('input', (ev) => {
+    const card = ev.target.closest('.era-card');
+    if(!card) return;
+    const entry = entries.find(e => e.id === card.dataset.id);
+    if(!entry) return;
+    const field = ev.target.dataset.field;
+    if(!field || field === 'yearFrom' || field === 'yearTo') return;
+    entry[field] = ev.target.innerText;
+    saveState();
+  });
+
+  cardsRow.addEventListener('change', (ev) => {
+    const field = ev.target.dataset.field;
+    if(field !== 'yearFrom' && field !== 'yearTo') return;
+    const card = ev.target.closest('.era-card');
+    const entry = entries.find(e => e.id === card.dataset.id);
+    if(!entry) return;
+    if(field === 'yearFrom'){
+      const v = Number(ev.target.value);
+      entry.yearFrom = isNaN(v) ? entry.yearFrom : v;
+    } else {
+      entry.yearTo = ev.target.value === '' ? null : Number(ev.target.value);
+    }
+    render();
+  });
+
+  studentNameInput.addEventListener('input', () => { saveState(); updatePrintMeta(); });
+
+  window.addEventListener('resize', scheduleLayout);
+
+  render();
+})();
+</script>
+</body>
+</html>

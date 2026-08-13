@@ -217,6 +217,7 @@
   <button class="view-tab active" id="tab-tl" onclick="switchView('tl')">Tidslinje</button>
   <button class="view-tab" id="tab-qz" onclick="switchView('qz')">Quiz</button>
   <button class="view-tab" id="tab-bg" onclick="switchView('bg')">Begreper</button>
+  <button class="view-tab" id="tab-mt" onclick="switchView('mt')">Min tidslinje</button>
 </div>
 <div id="view-tl">
   <nav class="era-nav" id="era-nav" aria-label="Velg epoke"></nav>
@@ -228,6 +229,9 @@
 </div>
 <div id="view-bg" style="display:none">
   <div id="bg-content"></div>
+</div>
+<div id="view-mt" style="display:none">
+  <iframe src="min-tidslinje.html" title="Min tidslinje" style="width:100%; height:85vh; border:none; border-radius:8px; display:block;"></iframe>
 </div>
 <aside class="sidebar">
   <div class="sidebar-title">Lær mer — ressurser</div>
@@ -1373,8 +1377,8 @@ function renderQuiz() {
 
 window.switchView = function(view) {
   if (typeof stopTTS === 'function') stopTTS();
-  const views = { tl: 'view-tl', qz: 'view-qz', bg: 'view-bg' };
-  const tabs  = { tl: 'tab-tl',  qz: 'tab-qz',  bg: 'tab-bg'  };
+  const views = { tl: 'view-tl', qz: 'view-qz', bg: 'view-bg', mt: 'view-mt' };
+  const tabs  = { tl: 'tab-tl',  qz: 'tab-qz',  bg: 'tab-bg',  mt: 'tab-mt'  };
   Object.keys(views).forEach(k => {
     const el = document.getElementById(views[k]);
     const tb = document.getElementById(tabs[k]);
