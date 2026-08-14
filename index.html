@@ -41,6 +41,12 @@
   .era-header h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; line-height: 1.2; margin-bottom: 10px; }
   .era-header .summary { font-size: 15px; color: var(--muted); max-width: 700px; line-height: 1.75; font-weight: 300; margin-bottom: 1.2rem; }
 
+  .score-image { max-width: 700px; border: 0.5px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; margin-bottom: 1.5rem; }
+  .score-image img { display: block; width: 100%; height: auto; }
+  .score-image .score-caption { padding: 9px 14px; font-size: 11.5px; color: var(--muted); background: var(--card); border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; line-height: 1.4; }
+  .score-image .score-caption a { color: var(--muted); text-decoration: none; flex-shrink: 0; }
+  .score-image .score-caption a:hover { color: var(--text); text-decoration: underline; }
+
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem; }
   @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
   .info-block { background: var(--card); border: 0.5px solid var(--border); border-radius: 10px; padding: 1.1rem 1.2rem; }
@@ -197,7 +203,59 @@
     transition: all .15s;
   }
   .sidebar-folder:hover { border-color: var(--border-hover); color: var(--text); }
-  @media (max-width: 1280px) { .sidebar { display: none; } }
+
+  .sidebar-toggle-btn {
+    display: none;
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    z-index: 60;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    border: 0.5px solid var(--border-hover);
+    border-radius: 24px;
+    color: var(--muted);
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    transition: all .15s;
+  }
+  .sidebar-toggle-btn:hover { color: var(--text); border-color: var(--border-hover); }
+  .sidebar-close {
+    display: none;
+    width: 26px; height: 26px; border-radius: 50%;
+    align-items: center; justify-content: center;
+    background: none; border: 0.5px solid var(--border);
+    color: var(--muted); cursor: pointer; font-size: 12px;
+    float: right; margin: -4px -4px 8px 0;
+  }
+  .sidebar-close:hover { color: var(--text); border-color: var(--border-hover); }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 55;
+  }
+
+  @media (max-width: 1280px) {
+    .sidebar-toggle-btn { display: flex; }
+    .sidebar {
+      display: none;
+      left: 0; top: 0; transform: none;
+      width: min(280px, 85vw);
+      max-height: 100vh; height: 100vh;
+      border-radius: 0; border: none;
+      border-right: 0.5px solid var(--border);
+      box-shadow: 0 0 40px rgba(0,0,0,0.35);
+      padding: 1.2rem;
+    }
+    .sidebar.open { display: block; }
+    .sidebar-backdrop.open { display: block; }
+    .sidebar-close { display: flex; }
+  }
   @keyframes tts-pulse { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
   #tts-btn.reading { animation: tts-pulse 1.5s ease-in-out infinite; color: var(--text); border-color: var(--border-hover); }
 </style>
@@ -233,7 +291,10 @@
 <div id="view-mt" style="display:none">
   <iframe src="min-tidslinje.html" title="Min tidslinje" style="width:100%; height:85vh; border:none; border-radius:8px; display:block;"></iframe>
 </div>
-<aside class="sidebar">
+<button class="sidebar-toggle-btn" id="sidebar-toggle" onclick="toggleSidebar()">📚 Ressurser</button>
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-close" onclick="toggleSidebar()" aria-label="Lukk ressurser">✕</button>
   <div class="sidebar-title">Lær mer — ressurser</div>
 
   <div class="sidebar-section">
@@ -282,6 +343,11 @@ const eras = [
     id: "medieval", label: "Middelalder", years: "500–1400",
     accent: "#9d7aff", badgeBg: "rgba(157,122,255,0.12)", badgeText: "#b99aff",
     summary: "Musikken i middelalderen var i all hovedsak kirkens musikk. Gregoriansk sang — enstemmig, latinsk og uten instrumenter — var standarden gjennom hele perioden, med røtter i synagogisk og tidlig kristen praksis. Pave Gregor den store (590–604) samlet og systematiserte melodiene, og tradisjonen spredte seg til klostre og katedraler over hele Europa. Fra ca. 900 begynte man å legge til nye stemmer til den gregorianske melodien — dette kalles organum og er selve starten på vestlig flerstemmighet. Notre-Dame-skolen i Paris på 1100–1200-tallet, med Léonin og Pérotin, utviklet flerstemmigheten videre og innførte rytmiske mønstre (modalrytmikk). Mot 1300-tallet ble musikken mer bevegelig i det som kalles Ars Nova — representert ved Guillaume de Machaut. Parallelt blomstret en rik verdslig sangkunst: trubadurene i Sør-Frankrike, trouvèrene i Nord-Frankrike og minnesangerne i Tyskland ga kjærligheten, naturen og ridderidealet et personlig musikalsk uttrykk.",
+    scoreImage: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Neume2.jpg/960px-Neume2.jpg",
+      caption: "Nevmenotasjon — middelalderens system for å skrive ned gregoriansk sang",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Neume2.jpg"
+    },
     styleTracks: [
       { label: "Gregoriansk sang — stiltrekk", items: [
         "Enstemmig (monofon), mannlig sang uten instrumenter",
@@ -367,6 +433,11 @@ const eras = [
     id: "renaissance", label: "Renessanse", years: "1400–1600",
     accent: "#3ecf8e", badgeBg: "rgba(62,207,142,0.10)", badgeText: "#5de0a0",
     summary: "Renessansen ('gjenfødelsen') hentet inspirasjon fra antikkens gresk-romerske idealer og humanismen — troen på enkeltmenneskets verdi og muligheter. Musikken speilet disse idealene med klarhet, balanse og velklang. Vokalpolyfonien nådde sitt absolutte høydepunkt: fire til seks selvstendige stemmer vevde seg inn i hverandre i jevn, flytende bevegelse. Den flamske skolen, med Josquin des Prez og Orlando di Lasso, dominerte europeisk musikk og spredte sin stil til hoffene og katedralene i hele Europa. Boktrykkerkunsten (Gutenberg, ca. 1450) revolusjonerte musikkspredningen — notesamlinger kunne nå trykkes og selges, og musikk ble for første gang noe vanlige folk spilte hjemme. Luthers reformasjon (1517) skapte et skille mellom katolsk og protestantisk kirkemusikk — koralen og den tyske salmen ble viktige nye former. Madrigalet blomstret som den fremste sekulære formen, kjent for tekstmaleri der musikken etterligner ordenes mening.",
+    scoreImage: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Palestrina_missa_papae_macelli_kyrie.PNG/960px-Palestrina_missa_papae_macelli_kyrie.PNG",
+      caption: "Palestrina — Missa Papae Marcelli, Kyrie: renessansens vokalpolyfoni i notebildet",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Palestrina_missa_papae_macelli_kyrie.PNG"
+    },
     styleTracks: [
       { label: "Musikalske stiltrekk", items: [
         "Vokalpolyfoni — det sentrale stilidealet",
@@ -438,6 +509,11 @@ const eras = [
     id: "baroque", label: "Barokk", years: "1600–1750",
     accent: "#f0a033", badgeBg: "rgba(240,160,51,0.10)", badgeText: "#f5bc60",
     summary: "Barokk betyr opprinnelig 'uregelmessig, overdådig perle' — et begrep fra arkitektur og billedkunst som beskriver periodens ornamenterte, dramatiske stil. I musikken brøt subjektiviteten gjennom: komponistene ville bevege lytterens følelser gjennom den såkalte affektlæren — prinsippet om at musikken i hvert avsnitt skal uttrykke én bestemt grunnfølelse. Operaen ble oppfunnet i Firenze rundt 1600 av Camerata Fiorentina — en gruppe intellektuelle som ville gjenskape det greske antikkens drama med musikk. Generalbass (basso continuo) ble barokkens musikalske fundament: en basslinje med besifrede akkorder fremført av cembalo, orgel og cello. Dur/moll-tonaliteten slo endelig gjennom og erstattet middelalderens kirketonearter. Musikken ble i stor grad skrevet for aristokratiet og kirken, og virtuose solister sto sentralt. Bach og Händel — begge født i 1685 — representerer barokkens høydepunkter: Bach med kontrapunktisk dybde og kirkemusikk, Händel med sangbar melodikk og populær oratoriestil.",
+    scoreImage: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/BWV1006_preludio_autograph_manuscript_1720.jpeg/960px-BWV1006_preludio_autograph_manuscript_1720.jpeg",
+      caption: "J.S. Bach — Partita BWV 1006, Preludio: Bachs eget håndskrevne manuskript fra 1720",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:BWV1006_preludio_autograph_manuscript_1720.jpeg"
+    },
     styleTracks: [
       { label: "Musikalske stiltrekk", items: [
         "Generalbass (basso continuo): akkompagnerende basslinje med besifring (tall over bassnotene angir akkorder)",
@@ -526,6 +602,11 @@ const eras = [
     id: "classical", label: "Wienerklassisisme", years: "1750–1820",
     accent: "#5aabf5", badgeBg: "rgba(90,171,245,0.10)", badgeText: "#7fc0f8",
     summary: "Etter Bachs død i 1750 skjer overgangen fra barokk til klassisk stil gradvis via rokokkoen — også kalt galant stil — en lettere, mer dekorativ musikk uten barokkens kontrapunktiske tyngde. Den klassiske stilen kjennetegnes av klarhet, balanse og homofon tekstur: en tydelig melodi bæres av et akkompagnement. Wien var musikkens verdensby, og de tre store — Haydn, Mozart og Beethoven — utgjorde et enestående triumvirat. Sonatesatsformen ble det viktigste formprinsippet: en eksposisjon med to kontrasterende temaer, en gjennomføring der temaene bearbeides og modulerer, og en rekapitulasjon der alt samles i grunntonearten. Pianoet erstattet cembaloen som det fremste instrumentet — med pianoets dynamiske muligheter (forte og piano) ble nye uttrykksformer mulige. Kammermusikken blomstret: strykekvartetten, klavertrioen og solosonate for klaver ble viktige sjangre. Beethovens sene verk pekte tydelig mot romantikken og utfordret tidens normer for hva en symfoni kunne uttrykke.",
+    scoreImage: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Beethoven_5th_Symphony_Holograph_manuscript.jpg/960px-Beethoven_5th_Symphony_Holograph_manuscript.jpg",
+      caption: "Beethoven — 5. symfoni: håndskrevet manuskript av det berømte åpningsmotivet",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Beethoven_5th_Symphony_Holograph_manuscript.jpg"
+    },
     styleTracks: [
       { label: "Klassiske stiltrekk", items: [
         "Homofon tekstur: melodi + akkompagnement (ikke kontrapunkt som standard)",
@@ -601,6 +682,11 @@ const eras = [
     id: "romantic", label: "Romantikk", years: "ca. 1820–1900",
     accent: "#e05c8a", badgeBg: "rgba(224,92,138,0.10)", badgeText: "#eb80a4",
     summary: "Romantikken setter følelsen, det subjektive og det individuelle i absolutt sentrum. Inspirasjon — ikke håndverk alene — ble det høyeste idealet: komponisten måtte ha noe personlig å si. Nye temaer strømmet inn: lengsel etter det uoppnåelige, naturens makt, det mystiske og overnaturlige, nasjonal identitet og historisk bevissthet. Orkestrene vokste markant — fra Haydns ca. 35 musikere til Mahlers over 100. Nye instrumenter ble tatt i bruk: basstuba (1835), saxofon (1845), ventilhorn og Wagner-tuba. Harmonikken ble stadig rikere og mer kromatisk — Wagner drev dette til ytterpunktet i Tristan und Isolde (1865), der tonalitetens oppløsning nesten var fullbyrdet. Nye former vokste frem: lied-syklusen (sang for stemme og klaver), det symfoniske dikt (orkesterverk basert på litteratur eller natur), og de nasjonalromantiske komposisjonene som brukte folkemusikk bevisst. Grieg, Smetana, Sibelius og Dvorák representerer nasjonalromantikken — komponister som satte sitt lands identitet på det internasjonale musikkkartet.",
+    scoreImage: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Schubert%2C_Impromptus_Op._90%2C_Holograph_manuscript%2C_Page_1.jpg/960px-Schubert%2C_Impromptus_Op._90%2C_Holograph_manuscript%2C_Page_1.jpg",
+      caption: "Schubert — Impromptus op. 90: side 1 av det egenhendige manuskriptet",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Schubert,_Impromptus_Op._90,_Holograph_manuscript,_Page_1.jpg"
+    },
     styleTracks: [
       { label: "Romantiske temaer og idealer", items: [
         "Det uoppnåelige, lengsel og drøm",
@@ -708,6 +794,11 @@ const eras = [
     id: "impressionism", label: "Impresjonisme", years: "1890–1920",
     accent: "#4dd8e0", badgeBg: "rgba(77,216,224,0.10)", badgeText: "#6ee7ee",
     summary: "Impresjonismen i musikken vokste frem i Frankrike på 1890-tallet, sterkt påvirket av symbolistisk poesi og japansk billedkunst. I stedet for romantikkens sterke følelsesuttrykk søkte impresjonistene å male stemninger, farger og øyeblikk i lyd. Debussy brøt med tradisjonell funksjonsharmonikk og lot akkorder fungere som klangflater og farger i seg selv. Heltoneskalaen, modale trekk og uoppløste akkordrekker ga musikken et svevende, drømmende preg. Ravel delte idealene men holdt fastere på form og presisjon — hans musikk er impresjonistisk i klang og klassisk i struktur. Begge ble avgjørende inspiratorer for musikken som fulgte i det 20. århundret, og representerer overgangen mellom senromantikk og modernisme.",
+    scoreImage: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Debussy_Voiles%2C_Preludes%2C_Book_I%2C_no._2%2C_mm._1-4.png/960px-Debussy_Voiles%2C_Preludes%2C_Book_I%2C_no._2%2C_mm._1-4.png",
+      caption: "Debussy — «Voiles» (Préludes, bok I): heltoneskalaens svevende klang i notebildet",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Debussy_Voiles,_Preludes,_Book_I,_no._2,_mm._1-4.png"
+    },
     styleTracks: [
       { label: "Musikalske stiltrekk", items: [
         "Klangfarge og atmosfære viktigere enn melodi og tradisjonell form",
@@ -768,6 +859,11 @@ const eras = [
     id: "modern", label: "Modernisme", years: "1900–1945",
     accent: "#e8534a", badgeBg: "rgba(232,83,74,0.10)", badgeText: "#ee7870",
     summary: "Det 20. århundre innvarslet et radikalt oppgjør med den romantiske tradisjonen. Tonaliteten — det harmoniske systemet som hadde styrt vestlig musikk i 300 år — ble utfordret, forlatt og erstattet med nye prinsipper. Tre store modernistiske retninger vokste frem: impresjonismen (Debussy) lot klangfarger og atmosfære erstatte tradisjonell harmonikk; ekspresjonismen (Schoenberg, Berg, Webern) drev det emosjonelle uttrykket til ekstreme grenser og forlot til slutt tonaliteten helt; neoklassisismen (Stravinsky, Prokofjev) hentet tilbake barokke og klassiske former med et nytt harmonisk språk. Stravinsky revolusjonerte rytmikken — urpremieren av Le Sacre du Printemps i Paris 1913 utløste bråk og slåsskamp i salen. Schoenberg utviklet tolvtoneteknikken (dodekafonisme): et system der alle 12 toner brukes likt uten tonalt sentrum. Bartók smeltet over 10 000 innsamlede folkeviser fra Øst-Europa inn i sin komposisjonsstil. Filmmusikkens fremvekst skapte en ny og viktig arena for komponister.",
+    scoreImage: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Schoenberg_-_Klavierstucke%2C_Op._11%2C_No._1_atonal.png/960px-Schoenberg_-_Klavierstucke%2C_Op._11%2C_No._1_atonal.png",
+      caption: "Schoenberg — Klavierstücke op. 11 nr. 1: et av de aller første atonale verkene",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:Schoenberg_-_Klavierstucke,_Op._11,_No._1_atonal.png"
+    },
     styleTracks: [
       { label: "Modernistiske retninger", items: [
         "Atonalisme: ingen tonalt sentrum — alle toner likestilles",
@@ -1116,6 +1212,14 @@ function renderMain() {
         <button id="tts-btn" onclick="toggleTTS()" title="Les opp epoketeksten" style="flex-shrink:0;padding:5px 12px;font-size:11px;font-family:'DM Sans',sans-serif;background:var(--card);border:0.5px solid var(--border);border-radius:20px;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;">▶ Les opp</button>
       </div>
       <p class="summary">${era.summary}</p>
+      ${era.scoreImage ? `
+      <figure class="score-image">
+        <img src="${era.scoreImage.url}" alt="${era.scoreImage.caption}" loading="lazy">
+        <figcaption class="score-caption">
+          <span>${era.scoreImage.caption}</span>
+          <a href="${era.scoreImage.sourceUrl}" target="_blank" rel="noopener">Kilde: Wikimedia Commons ↗</a>
+        </figcaption>
+      </figure>` : ''}
     </div>
     <div class="two-col">${infoCols}</div>
     <hr class="section-divider">
@@ -1386,6 +1490,11 @@ window.switchView = function(view) {
   });
   if (view === 'qz') { if (!qzOrder.length) startQuiz(qzEra); else renderQuiz(); }
   if (view === 'bg') renderBegreper();
+};
+
+window.toggleSidebar = function() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-backdrop').classList.toggle('open');
 };
 
 window.toggleTheme = function() {
