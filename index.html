@@ -1133,7 +1133,7 @@ const eras = [
   {
     id: "rock", label: "Rock", years: "1950–1980",
     accent: "#ef4444", badgeBg: "rgba(239,68,68,0.12)", badgeText: "#f87171",
-    summary: "Rock'n'roll vokste frem på 1950-tallet som et kulturelt jordskjelv: ungdommen fikk sin egen musikk, kroppen ble del av fremføringen, og generasjonskløften ble synlig for første gang i historien. Chuck Berry, Elvis Presley og Little Richard kombinerte afroamerikansk rhythm and blues med hvit country og skapte noe som sjokkerte foreldre og fascinerte ungdom verden over. The Beatles brakte rocken til en ny dimensjon — de brukte studioet som komposisjonsinstrument og kombinerte populær appell med kunstnerisk ambisjon. Bob Dylan ga teksten en litterær og politisk tyngde den aldri hadde hatt i populærmusikken. Rocken forgrenet seg i løpet av 1960–70-tallet til utallige retninger: psykedelisk rock, hard rock, prog rock, punk og new wave.",
+    summary: "Rock'n'roll vokste frem på 1950-tallet som et kulturelt jordskjelv: ungdommen fikk sin egen musikk, kroppen ble del av fremføringen, og generasjonskløften ble synlig for første gang i historien. Chuck Berry, Elvis Presley og Little Richard kombinerte afroamerikansk rhythm and blues med hvit country og skapte noe som sjokkerte foreldre og fascinerte ungdom verden over. Samtidig utviklet afroamerikansk musikk seg videre i egne spor: gospel og R&B smeltet sammen til soul (Ray Charles, Aretha Franklin, James Brown), og plateselskapet Motown i Detroit skapte en dansbar, kommersielt vellykket «svart popmusikk» med grupper som The Supremes. Fra Storbritannia kom «the British Invasion» med The Beatles, Rolling Stones, The Who og The Kinks — grupper som tok amerikansk rhythm and blues og speilet den tilbake med ny energi. The Beatles brakte rocken til en ny dimensjon: de brukte studioet som komposisjonsinstrument og kombinerte populær appell med kunstnerisk ambisjon, mens Bob Dylan ga teksten en litterær og politisk tyngde den aldri hadde hatt i populærmusikken. Rundt 1967 ble rocken til «samtidsmusikk» — albumet ble et kunstnerisk uttrykk i seg selv, og psykedelisk rock (Jimi Hendrix, Pink Floyd) utforsket bevissthetsutvidende lyd med nye studioeffekter og elektroniske instrumenter som Moog-synthesizeren. Derfra forgrenet rocken seg videre til hard rock (Led Zeppelin, Deep Purple), progrock (Pink Floyd, Yes, King Crimson) og country rock (The Byrds, Eagles), før punk (Sex Pistols, The Clash, Ramones) rundt 1976–77 svarte med et rått, tilbake-til-røttene opprør mot alt det utsvevende.",
     styleTracks: [
       { label: "Rock'n'rollens kjennetegn", items: [
         "Røtter i rhythm and blues, gospel og country — afroamerikansk musiktradisjon",
@@ -1141,13 +1141,16 @@ const eras = [
         "Sterk backbeat — trommen slår tydelig på 2. og 4. taktslag",
         "Enkel harmonikk: I–IV–V akkordprogresjoner fra bluesskjemaet",
         "Tekst om ungdom, kjærlighet, frihet og opprør",
-        "Artisten som stjerne og ikon — sceneshow og image like viktig som musikk"
+        "Artisten som stjerne og ikon — sceneshow og image like viktig som musikk",
+        "Soul og funk (James Brown, Aretha Franklin): rytmisk groove og politisk bevissthet"
       ]},
       { label: "Rockens utvikling", items: [
         "Rock'n'roll (1950-t): Chuck Berry, Elvis, Little Richard — røttene",
+        "Soul og Motown (1960-t): Aretha Franklin, James Brown, The Supremes",
         "The British Invasion (1964-): Beatles og Rolling Stones til USA",
-        "Psykedelisk rock (1967–68): studio som komposisjonsinstrument",
-        "Hard rock og metal (1970-t): Led Zeppelin, Black Sabbath",
+        "Psykedelisk rock (1967–68): studio som komposisjonsinstrument — Hendrix, Pink Floyd",
+        "Woodstock (1969): rockfestivalen som symbol på en hel generasjon",
+        "Hard rock og progrock (1970-t): Led Zeppelin, Deep Purple, Pink Floyd, Yes",
         "Punk (1976–77): Sex Pistols, The Clash — tilbake til rå enkelhet",
         "Bob Dylan: folk-rock og teksten som litteratur og samfunnskritikk"
       ]}
@@ -1178,19 +1181,93 @@ const eras = [
         youtube: [{ title: "Elvis Presley Jailhouse Rock", url: "https://www.youtube.com/watch?v=PpsUOOfb-vE" }, { title: "Elvis Presley Hound Dog Ed Sullivan Show", url: "https://www.youtube.com/watch?v=aNYWl13IWhY" }]
       },
       {
-        name: "The Beatles / Bob Dylan", years: "1960-tallet",
-        work: "Sgt. Pepper's Lonely Hearts Club Band · Blowin' in the Wind · Highway 61 Revisited",
-        note: "Populærmusikken som høykunst. The Beatles startet som et danseband i Liverpool og endte som det mest innflytelsesrike bandet i historien — de brukte studioets muligheter radikalt og kombinerte pop med kunstmusikalske elementer, indisk musikk, klassisk kammermusikk og psykedelika. Sgt. Pepper's (1967) er det første konseptalbum i rockehistorien. Bob Dylan ga teksten en litterær og politisk tyngde populærmusikken aldri hadde hatt — «Blowin' in the Wind» og «The Times They Are A-Changin'» ble borgerrettsbevegelses hymner. Begge forandret for alltid hva populærmusikk kunne si og gjøre.",
+        name: "The Beatles", years: "1960–1970",
+        work: "Sgt. Pepper's Lonely Hearts Club Band · Strawberry Fields Forever · A Day in the Life",
+        note: "Populærmusikken som høykunst. The Beatles startet som et Liverpool-danseband som spilte enkel rock'n'roll med 32-takters AABA-form og korsang inspirert av doo-wop, men utviklet seg til det mest innflytelsesrike bandet i historien. Fra midten av 1960-tallet ble de pionerer i studioarbeid: nye lydeffekter, mikrofonplasseringer, tape loops og uvanlige instrumenter som sitar og mellotron, med produsenten George Martin («den femte Beatle») sentral i arbeidet. Sgt. Pepper's Lonely Hearts Club Band (1967) regnes som rockens første konseptalbum — tekst, plateomslag og musikk bundet sammen i en gjennomarbeidet helhet. Lydcollagen «Revolution 9» (1968) viser hvor langt de hentet inspirasjon fra samtidens avantgardemusikk (Varèse, Cage, Stockhausen).",
         characteristics: [
-          "Studio som komposisjonsverktøy: baklengs innspilling, tape-loops og studioeffekter",
-          "Blanding av sjangre: pop, rock, indisk musikk, kammermusikk og psykedelika",
-          "Tekst som litteratur og protest (Dylan): poetiske bilder og samfunnskritikk",
-          "Sgt. Pepper's: første konseptalbum — pop som sammenhengende kunstnerisk utsagn",
-          "Tilgjengelig melodikk kombinert med kunstnerisk ambisjon"
+          "Pionerer i studioarbeid: lydeffekter, tape loops og uvanlige instrumenter (sitar, mellotron)",
+          "Sgt. Pepper's (1967): rockens første konseptalbum — helhetlig kunstnerisk uttrykk",
+          "Raffinert harmonikk med sekund- og tersforbindelser utover enkel rock-harmonikk",
+          "Beveget seg fra enkel rock'n'roll-pop til avantgardistiske lydcollager i løpet av ti år"
         ],
         youtube: [
           { title: "Beatles A Day in the Life Sgt Peppers Lonely Hearts Club Band", url: "https://www.youtube.com/watch?v=usNsCeOV4GM" },
-          { title: "Bob Dylan Blowin in the Wind live acoustic folk", url: "https://www.youtube.com/watch?v=vWwgrjjIMXA" }
+          { title: "Beatles Strawberry Fields Forever", url: "https://www.youtube.com/watch?v=HtUH9z_Oey8" }
+        ]
+      },
+      {
+        name: "Bob Dylan", years: "f. 1941",
+        work: "Blowin' in the Wind · Like a Rolling Stone · The Times They Are A-Changin'",
+        note: "Ga rocketeksten en litterær og politisk tyngde populærmusikken aldri hadde hatt. Med forbildet Woody Guthrie som utgangspunkt forente Dylan poetisk styrke, et direkte budskap og enkle melodier i den amerikanske folk-tradisjonen. «Blowin' in the Wind» og «The Times They Are A-Changin'» ble hymner for borgerrettsbevegelsen og fredsbevegelsen. Da Dylan gikk over til elektrisk backing fra 1965 oppsto sjangeren «folk rock», og tekstene hans inspirerte en hel generasjon rockeartister til å ta samfunnskritikk og poesi på alvor.",
+        characteristics: [
+          "Samfunnskritiske, poetiske tekster — populærmusikk som litteratur",
+          "Forbilde: Woody Guthrie og den amerikanske folkemusikktradisjonen (visesang)",
+          "Overgang til elektrisk backing fra 1965 skapte sjangeren «folk rock»",
+          "Direkte, særpreget vokal framføring framfor teknisk perfeksjon"
+        ],
+        youtube: [
+          { title: "Bob Dylan Blowin in the Wind live acoustic folk", url: "https://www.youtube.com/watch?v=vWwgrjjIMXA" },
+          { title: "Bob Dylan Like a Rolling Stone", url: "https://www.youtube.com/watch?v=IwOfCgkyEj0" }
+        ]
+      },
+      {
+        name: "The Rolling Stones", years: "f. 1962",
+        work: "(I Can't Get No) Satisfaction · Sympathy for the Devil",
+        note: "«Verdens største rock'n'roll band» begynte med coverlåter av Chicago-blues (Muddy Waters, Chuck Berry) før de skrev egne, riff-baserte låter. Arrangementene er ofte statiske og bygget for å framheve vokalisten Mick Jagger, med samfunns- og mediekritiske tekster som ofte har seksuelle undertoner. Sammen med Beatles utgjorde de kjernen i «the British Invasion» av USA fra 1964, men holdt en tyngre, mer bluesbasert og opprørsk profil enn Beatles' popmelodikk. Etter hvert har de tatt opp trekk fra country, folk, reggae og world music.",
+        characteristics: [
+          "Riff-baserte låter bygget rundt Keith Richards' gitarriff og Mick Jaggers vokal",
+          "Røtter i Chicago-blues — cover av Muddy Waters og Chuck Berry",
+          "Samfunns- og mediekritiske tekster, ofte med seksuelle undertoner",
+          "Sentrale i «the British Invasion» av USA fra 1964, sammen med Beatles"
+        ],
+        youtube: [
+          { title: "Rolling Stones Satisfaction 1965", url: "https://www.youtube.com/watch?v=lt8pQDY51u0" },
+          { title: "Rolling Stones Sympathy for the Devil", url: "https://www.youtube.com/watch?v=Jwtyn-L-2gQ" }
+        ]
+      },
+      {
+        name: "Jimi Hendrix", years: "1942–1970",
+        work: "Purple Haze · All Along the Watchtower",
+        note: "En av rockens mest innflytelsesrike gitarister, med et teknisk virtuost spill forankret i blues. Hendrix gjorde forvrengning, feedback, wah-wah og fuzz til en integrert del av det musikalske uttrykket snarere enn feil å unngå — en motpol til den mer studiobaserte rocken fra samme periode. Han var live-orientert og kjent for eksplosive konsertopptredener, blant annet en forvrengt versjon av den amerikanske nasjonalsangen på Woodstock i 1969 som protest mot Vietnamkrigen. Hendrix døde bare 27 år gammel, men er fortsatt en av de mest kopierte gitaristene i rockehistorien.",
+        characteristics: [
+          "Forvrengning, feedback, wah-wah og fuzz som integrert musikalsk uttrykk, ikke feil",
+          "Teknisk virtuost gitarspill med utgangspunkt i blues",
+          "Live-orientert, eksplosiv scenetilstedeværelse — motpol til «studiorocken»",
+          "The Star Spangled Banner på Woodstock (1969) — musikalsk protest mot Vietnamkrigen"
+        ],
+        youtube: [
+          { title: "Jimi Hendrix Purple Haze", url: "https://www.youtube.com/watch?v=WGoDaYjdfSg" },
+          { title: "Jimi Hendrix All Along the Watchtower", url: "https://www.youtube.com/watch?v=TLV4_xaYynY" }
+        ]
+      },
+      {
+        name: "Pink Floyd", years: "1965–1994/2014",
+        work: "Time · Comfortably Numb",
+        note: "Startet som et psykedelisk rock-band i London (The Piper at the Gates of Dawn, 1967) og utviklet seg til et av de mest sentrale progrock-bandene på 1970-tallet med album som The Dark Side of the Moon (1973), Wish You Were Here (1975) og rockeoperaen The Wall (1979). David Gilmours lyriske, personlige sologitar og Roger Waters' filosofiske og samfunnskritiske tekster forener avantgardistiske og romantiske trekk i musikken. Bandet la stor vekt på synthesizere, lydeffekter og et helhetlig lydbilde, og var kjent for virkningsfulle sceneshow med dramatiske lys- og røykeffekter, filmprojeksjoner og oppblåsbare figurer.",
+        characteristics: [
+          "Beveget seg fra psykedelisk rock til progrockens konseptalbum og lange musikalske forløp",
+          "Stor vekt på synthesizere, lydeffekter og et helhetlig, atmosfærisk lydbilde",
+          "Filosofiske, samfunnskritiske og ofte dystre tekster (Roger Waters)",
+          "Virkningsfulle sceneshow: lys- og røykeffekter, filmprojeksjoner, oppblåsbare figurer"
+        ],
+        youtube: [
+          { title: "Pink Floyd Time Dark Side of the Moon", url: "https://www.youtube.com/watch?v=Qr0-7Ds79zo" },
+          { title: "Pink Floyd Comfortably Numb", url: "https://www.youtube.com/watch?v=_FrOQC-zEog" }
+        ]
+      },
+      {
+        name: "Sex Pistols", years: "1975–1978",
+        work: "Anarchy in the U.K. · God Save the Queen",
+        note: "Blant de mest sentrale bandene i punkens gjennombrudd i Storbritannia 1976–77. Sex Pistols reagerte mot det de opplevde som overdrivelser i 1970-tallets mainstream rock — lange, virtuose soloer, dyre studioproduksjoner og progrockens kunstneriske ambisjoner. I stedet dyrket de hurtig, hardtslående musikk med korte låter, få akkorder («tre akkorder er nok») og en bevisst skepsis til virtuositet. Tekstene var politisk ladede og provoserende, og bandet vakte sterke politiske reaksjoner, blant annet med «God Save the Queen» under dronningens sølvjubileum i 1977. Punkens gjør-det-selv-idé — å produsere og distribuere musikk utenom de store selskapene — fikk stor betydning for musikkulturen som fulgte.",
+        characteristics: [
+          "Hurtig, hardtslående musikk med korte låter og enkle, «tre-akkorders» arrangementer",
+          "Bevisst skepsis til virtuositet — et opprør mot progrockens og hard rockens overdrivelser",
+          "Politisk ladede, provoserende tekster som utløste sterke reaksjoner",
+          "Gjør-det-selv-idé: produksjon og distribusjon utenom de store plateselskapene"
+        ],
+        youtube: [
+          { title: "Sex Pistols Anarchy in the UK", url: "https://www.youtube.com/watch?v=cBojbjoMttI" },
+          { title: "Sex Pistols God Save the Queen", url: "https://www.youtube.com/watch?v=yqrAPOZxgzU" }
         ]
       }
     ]
