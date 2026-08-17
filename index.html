@@ -355,13 +355,16 @@ const eras = [
         "Rytmen følger språkrytmen — fri rytmikk uten fast puls",
         "Melodikken er mest trinnvis med lite omfang (litt over en oktav)",
         "Kirketoneartene: dorisk, frygisk, lydisk, mixolydisk",
-        "Upersonlig og objektivt uttrykk — gudstjenestelig funksjon"
+        "Upersonlig og objektivt uttrykk — gudstjenestelig funksjon",
+        "Melismatisk stil (mange toner per stavelse, f.eks. på «Amen» og «Alleluja») og syllabisk stil (én tone per stavelse) brukes om hverandre"
       ]},
       { label: "Historisk utvikling", items: [
         "Ca. 600: Gregor den store standardiserer gregoriansk sang",
         "Ca. 900: Organum — ny stemme i parallelle kvarter til gregorianikken",
+        "Ca. 900–1000: nevmer (tegn over teksten) viser meldiens retning, men ikke eksakt tonehøyde",
+        "Ca. 1025: Guido av Arezzo utvikler linjenotasjon med fast tonehøyde og solmisasjon (ut–re–mi–fa–sol–la) — grunnlaget for notasjon den dag i dag",
         "1100-t: Notre Dame-skolen i Paris (Ars Antiqua) — Pérotin",
-        "1300-t: Ars Nova — mer framdrift, todelt takt, nyansert rytmikk",
+        "1300-t: Ars Nova — mer framdrift, todelt takt, nyansert rytmikk, isorytmi (gjentatte rytme- og tonemønstre) hos Machaut",
         "Trubadurer (Sør-Frankrike), trouvères (Nord-Frankrike), minnesang (Tyskland)",
         "Verdslig, dikterisk sangform — kjærlighetssanger dominerer"
       ]}
@@ -446,7 +449,9 @@ const eras = [
         "Treklangharmonikk — akkorder begynner å prege musikken",
         "Dissonans og konsonans som spenningsskapende formelement",
         "Klangfylde og velklang — dypere basstemme, kor i stedet for bare solister",
-        "Klarhet i uttrykket — balanse mellom form og fantasi"
+        "Klarhet i uttrykket — balanse mellom form og fantasi",
+        "A cappella-idealet: ren vokalmusikk uten instrumentalakkompagnement regnes som det høyeste uttrykket, særlig i kirkemusikken",
+        "Poengimitasjon (points of imitation): hver tekstlinje får sitt eget melodiske motiv som vandrer gjennom stemmene etter tur"
       ]},
       { label: "Historisk kontekst", items: [
         "Flandern: 'Den flamske skolen' — europeisk musikksenter",
@@ -454,7 +459,8 @@ const eras = [
         "Luther og reformasjonen endret kirkemusikken — protestantisk salme",
         "Boktrykkerkunsten (Gutenberg): notesamlinger spres, musikk i hjemmet",
         "Italia som kunstnerisk sentrum — Michelangelo, da Vinci, Rafael",
-        "Madrigalet — sekulær vokalform, særlig populær i Italia og England"
+        "Madrigalet — sekulær vokalform, særlig populær i Italia og England",
+        "Instrumentalmusikken vokser fram som egen sjanger: dansesatser, ricercar og canzona for instrumentgrupper"
       ]}
     ],
     composers: [
@@ -508,7 +514,7 @@ const eras = [
   {
     id: "baroque", label: "Barokk", years: "1600–1750",
     accent: "#f0a033", badgeBg: "rgba(240,160,51,0.10)", badgeText: "#f5bc60",
-    summary: "Barokk betyr opprinnelig 'uregelmessig, overdådig perle' — et begrep fra arkitektur og billedkunst som beskriver periodens ornamenterte, dramatiske stil. I musikken brøt subjektiviteten gjennom: komponistene ville bevege lytterens følelser gjennom den såkalte affektlæren — prinsippet om at musikken i hvert avsnitt skal uttrykke én bestemt grunnfølelse. Operaen ble oppfunnet i Firenze rundt 1600 av Camerata Fiorentina — en gruppe intellektuelle som ville gjenskape det greske antikkens drama med musikk. Generalbass (basso continuo) ble barokkens musikalske fundament: en basslinje med besifrede akkorder fremført av cembalo, orgel og cello. Dur/moll-tonaliteten slo endelig gjennom og erstattet middelalderens kirketonearter. Musikken ble i stor grad skrevet for aristokratiet og kirken, og virtuose solister sto sentralt. Bach og Händel — begge født i 1685 — representerer barokkens høydepunkter: Bach med kontrapunktisk dybde og kirkemusikk, Händel med sangbar melodikk og populær oratoriestil.",
+    summary: "Barokk betyr opprinnelig 'uregelmessig, overdådig perle' — et begrep fra arkitektur og billedkunst som beskriver periodens ornamenterte, dramatiske stil. I musikken brøt subjektiviteten gjennom: komponistene ville bevege lytterens følelser gjennom den såkalte affektlæren — prinsippet om at musikken i hvert avsnitt skal uttrykke én bestemt grunnfølelse. Operaen ble oppfunnet i Firenze rundt 1600 av Camerata Fiorentina — en gruppe intellektuelle som ville gjenskape det greske antikkens drama med musikk. Generalbass (basso continuo) ble barokkens musikalske fundament: en basslinje med besifrede akkorder fremført av cembalo, orgel og cello. Dur/moll-tonaliteten slo endelig gjennom og erstattet middelalderens kirketonearter. Dynamikken endret seg brått i stedet for gradvis — såkalt terrassedynamikk — siden datidens tasteinstrumenter ikke kunne endre klangstyrken mens en tone klang. Musikken ble i stor grad skrevet for aristokratiet og kirken, og virtuose solister sto sentralt. Bach og Händel — begge født i 1685 — representerer barokkens høydepunkter: Bach med kontrapunktisk dybde og kirkemusikk, Händel med sangbar melodikk og populær oratoriestil.",
     scoreImage: {
       url: "images/scores/barokk-bach-toccata.png",
       caption: "J.S. Bach — Toccata og fuge i d-moll, BWV 565: den berømte åpningen i lesbar notasjon",
@@ -520,15 +526,18 @@ const eras = [
         "Dur/moll-tonalitet etableres fullt ut",
         "Opera: ny scenisk form med monodi, resitativ og arie",
         "Affektlære: musikken uttrykker én grunnfølelse per avsnitt",
-        "Kontrapunkt og ornamentikk",
-        "Tydelige kontraster: forte/piano, solo/tutti (concerto grosso)"
+        "Kontrapunkt og ornamentikk (trille, forslag, mordent) — utsmykning av melodilinjen",
+        "Terrassedynamikk: brå skift mellom sterkt og svakt (forte/piano) i stedet for gradvis crescendo/diminuendo — et resultat av at cembalo og orgel ikke kunne gradere klangstyrken selv",
+        "Tydelige kontraster: solo/tutti (concerto grosso), lys/mørke, fort/langsomt",
+        "Fugeteknikk: et tema føres inn stemme for stemme (tema → svar → kontrasubjekt), ofte med stretto (temainnsatser tett på hverandre) mot slutten"
       ]},
       { label: "Viktige former og sjangre", items: [
         "Opera: scenisk form med sang og orkester — fra L'Orfeo (1607)",
         "Oratorium: som opera, men uten scenisk fremføring — bibelske historier",
         "Kantate: for kirken — solister, kor, orgel, orkester — korsatser, resitativer og arier",
         "Konsert og concerto grosso: solist(er) mot orkester",
-        "Suite, sonate, fuge og passjon"
+        "Suite, sonate, fuge og passjon",
+        "Dansesuitens faste satser: allemande, courante, sarabande og gigue — ulike land, tempi og taktarter satt sammen i én suite"
       ]}
     ],
     composers: [
@@ -614,15 +623,19 @@ const eras = [
         "Sonatesats: eksposisjon (HT + ST) – gjennomføring – rekapitulasjon",
         "Dualisme: kontrast mellom hovedtema (HT) og sidetema (ST)",
         "Klarhet i form og avbalansert uttrykk",
-        "Pianoet erstatter cembaloen — mulighet for å gradere dynamikken (forte–piano)"
+        "Pianoet erstatter cembaloen — mulighet for å gradere dynamikken (forte–piano)",
+        "Gradvis dynamikk (crescendo og diminuendo) avløser barokkens brå terrassedynamikk — musikken bygger opp og demper spenningen gradvis",
+        "Alberti-bass: brutte akkorder i jevn, rytmisk pulsering — typisk klaverakkompagnement til høyre hånds melodi",
+        "Mannheimerskolens orkestereffekter (den berømte «Mannheim-raketten» — en stigende, crescenderende passasje) spres til hele Europa"
       ]},
       { label: "Viktige former", items: [
         "Sonatesats (1. sats) — Haydn sentral i å utvikle formen",
         "Langsom sats: ABA-form eller tema med variasjoner (2. sats)",
         "Menuett og trio: A–B–A, sammensatt tredelt form (3. sats)",
         "Rondo eller sonaterondo (4. sats)",
-        "Klassisk symfoni: fire satser — stort anlagt orkesterverk",
-        "Strykekvartett, klavertrio og annen kammermusikk"
+        "Klassisk symfoni: fire satser — stort anlagt orkesterverk, klarinetten kommer inn som fast orkesterinstrument",
+        "Strykekvartett, klavertrio og annen kammermusikk",
+        "Opera buffa (komisk opera) og opera seria (alvorlig opera) — Mozart mester i begge"
       ]}
     ],
     composers: [
@@ -703,7 +716,9 @@ const eras = [
         "Nye instrumenter: basstuba (1835), saxofon (1845), Boehm-fløyte (1847), Wagner-tuba (1854), celesta (1886)",
         "Større orkestre — større dynamisk variasjon",
         "Virtuositet som kunstnerisk ideal",
-        "Nye, frie former: symfonisk dikt, énsatsige karakterstykker, lied-syklus"
+        "Nye, frie former: symfonisk dikt, énsatsige karakterstykker, lied-syklus",
+        "Rubato: fri, elastisk tempobehandling — utøveren fremskynder og bremser tempoet for uttrykkets skyld, «stjålet tid»",
+        "Programmusikk: instrumentalmusikk knyttet til en litterær idé, et bilde eller en fortelling, i motsetning til den absolutte musikkens rene form"
       ]}
     ],
     composers: [
@@ -805,6 +820,7 @@ const eras = [
         "Funksjonsharmonikk erstattes av akkorder som klangflater og farger",
         "Heltoneskalaen: seks toner jevnt fordelt — ingen ledelone, ingen klar tonika",
         "Modale trekk — kirketonearter gjenoppdages som farge og mørke",
+        "Pentaton skala (femtoneskala uten halvtoner) — inspirert av gamelan og østasiatisk musikk, gir en svevende, «orientalsk» klang",
         "Uoppløste dissonanser: akkordene flyter videre uten hvile",
         "Fin, tynn orkestrering med vekt på fløyte, harpe og sourdine-strykere",
         "Programmusikk: musikken maler hav, vind, lys og naturstemninger"
