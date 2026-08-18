@@ -27,7 +27,12 @@
   header h1 em { font-style: italic; color: #c8a96a; }
   header p { color: var(--muted); font-size: 14px; max-width: 520px; font-weight: 300; }
 
-  .era-nav { max-width: 900px; margin: 0 auto; padding: 1.5rem 2rem 0; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+  .category-nav { max-width: 900px; margin: 0 auto; padding: 1.5rem 2rem 0; display: flex; gap: 8px; flex-wrap: wrap; }
+  .category-tab { padding: 8px 20px; font-size: 12.5px; font-family: 'DM Sans', sans-serif; font-weight: 500; letter-spacing: 0.04em; color: var(--muted); background: var(--card); border: 0.5px solid var(--border); border-radius: 20px; cursor: pointer; transition: all .2s; }
+  .category-tab:hover { color: var(--text); border-color: var(--border-hover); }
+  .category-tab.active { border-width: 1.5px; font-weight: 600; }
+
+  .era-nav { max-width: 900px; margin: 0 auto; padding: 0.9rem 2rem 0; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
   .era-nav::-webkit-scrollbar { display: none; }
   .era-tab { flex-shrink: 0; padding: 10px 18px; font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 400; color: var(--muted); background: none; border: none; border-bottom: 1.5px solid var(--faint); cursor: pointer; transition: all .2s; white-space: nowrap; letter-spacing: 0.02em; }
   .era-tab:hover { color: var(--text); border-bottom-color: var(--border-hover); }
@@ -284,6 +289,7 @@
   <button class="view-tab" id="tab-mt" onclick="switchView('mt')">Min tidslinje</button>
 </div>
 <div id="view-tl">
+  <nav class="category-nav" id="category-nav" aria-label="Velg kategori"></nav>
   <nav class="era-nav" id="era-nav" aria-label="Velg epoke"></nav>
   <main id="main-content" aria-live="polite"></main>
 </div>
@@ -346,7 +352,7 @@ const YT_ICON = `<svg class="yt-icon" viewBox="0 0 24 24" fill="none" xmlns="htt
 
 const eras = [
   {
-    id: "medieval", label: "Middelalder", years: "500–1400",
+    id: "medieval", label: "Middelalder", years: "500–1400", category: "klassisk",
     accent: "#9d7aff", badgeBg: "rgba(157,122,255,0.12)", badgeText: "#b99aff",
     summary: "Musikken i middelalderen var i all hovedsak kirkens musikk. Gregoriansk sang — enstemmig, latinsk og uten instrumenter — var standarden gjennom hele perioden, med røtter i synagogisk og tidlig kristen praksis. Pave Gregor den store (590–604) samlet og systematiserte melodiene, og tradisjonen spredte seg til klostre og katedraler over hele Europa. Fra ca. 900 begynte man å legge til nye stemmer til den gregorianske melodien — dette kalles organum og er selve starten på vestlig flerstemmighet. Notre-Dame-skolen i Paris på 1100–1200-tallet, med Léonin og Pérotin, utviklet flerstemmigheten videre og innførte rytmiske mønstre (modalrytmikk). Mot 1300-tallet ble musikken mer bevegelig i det som kalles Ars Nova — representert ved Guillaume de Machaut. Parallelt blomstret en rik verdslig sangkunst: trubadurene i Sør-Frankrike, trouvèrene i Nord-Frankrike og minnesangerne i Tyskland ga kjærligheten, naturen og ridderidealet et personlig musikalsk uttrykk.",
     scoreImage: {
@@ -447,7 +453,7 @@ const eras = [
     ]
   },
   {
-    id: "renaissance", label: "Renessanse", years: "1400–1600",
+    id: "renaissance", label: "Renessanse", years: "1400–1600", category: "klassisk",
     accent: "#3ecf8e", badgeBg: "rgba(62,207,142,0.10)", badgeText: "#5de0a0",
     summary: "Renessansen ('gjenfødelsen') hentet inspirasjon fra antikkens gresk-romerske idealer og humanismen — troen på enkeltmenneskets verdi og muligheter. Musikken speilet disse idealene med klarhet, balanse og velklang. Vokalpolyfonien nådde sitt absolutte høydepunkt: fire til seks selvstendige stemmer vevde seg inn i hverandre i jevn, flytende bevegelse. Den flamske skolen, med Josquin des Prez og Orlando di Lasso, dominerte europeisk musikk og spredte sin stil til hoffene og katedralene i hele Europa. Boktrykkerkunsten (Gutenberg, ca. 1450) revolusjonerte musikkspredningen — notesamlinger kunne nå trykkes og selges, og musikk ble for første gang noe vanlige folk spilte hjemme. Luthers reformasjon (1517) skapte et skille mellom katolsk og protestantisk kirkemusikk — koralen og den tyske salmen ble viktige nye former. Madrigalet blomstret som den fremste sekulære formen, kjent for tekstmaleri der musikken etterligner ordenes mening.",
     scoreImage: {
@@ -534,7 +540,7 @@ const eras = [
     ]
   },
   {
-    id: "baroque", label: "Barokk", years: "1600–1750",
+    id: "baroque", label: "Barokk", years: "1600–1750", category: "klassisk",
     accent: "#f0a033", badgeBg: "rgba(240,160,51,0.10)", badgeText: "#f5bc60",
     summary: "Barokk betyr opprinnelig 'uregelmessig, overdådig perle' — et begrep fra arkitektur og billedkunst som beskriver periodens ornamenterte, dramatiske stil. I musikken brøt subjektiviteten gjennom: komponistene ville bevege lytterens følelser gjennom den såkalte affektlæren — prinsippet om at musikken i hvert avsnitt skal uttrykke én bestemt grunnfølelse. Operaen ble oppfunnet i Firenze rundt 1600 av Camerata Fiorentina — en gruppe intellektuelle som ville gjenskape det greske antikkens drama med musikk. Generalbass (basso continuo) ble barokkens musikalske fundament: en basslinje med besifrede akkorder fremført av cembalo, orgel og cello. Dur/moll-tonaliteten slo endelig gjennom og erstattet middelalderens kirketonearter. Dynamikken endret seg brått i stedet for gradvis — såkalt terrassedynamikk — siden datidens tasteinstrumenter ikke kunne endre klangstyrken mens en tone klang. Musikken ble i stor grad skrevet for aristokratiet og kirken, og virtuose solister sto sentralt. Bach og Händel — begge født i 1685 — representerer barokkens høydepunkter: Bach med kontrapunktisk dybde og kirkemusikk, Händel med sangbar melodikk og populær oratoriestil.",
     scoreImage: {
@@ -638,7 +644,7 @@ const eras = [
     ]
   },
   {
-    id: "classical", label: "Wienerklassisisme", years: "1750–1820",
+    id: "classical", label: "Wienerklassisisme", years: "1750–1820", category: "klassisk",
     accent: "#5aabf5", badgeBg: "rgba(90,171,245,0.10)", badgeText: "#7fc0f8",
     summary: "Etter Bachs død i 1750 skjer overgangen fra barokk til klassisk stil gradvis via rokokkoen — også kalt galant stil — en lettere, mer dekorativ musikk uten barokkens kontrapunktiske tyngde. Den klassiske stilen kjennetegnes av klarhet, balanse og homofon tekstur: en tydelig melodi bæres av et akkompagnement. Wien var musikkens verdensby, og de tre store — Haydn, Mozart og Beethoven — utgjorde et enestående triumvirat. Sonatesatsformen ble det viktigste formprinsippet: en eksposisjon med to kontrasterende temaer, en gjennomføring der temaene bearbeides og modulerer, og en rekapitulasjon der alt samles i grunntonearten. Pianoet erstattet cembaloen som det fremste instrumentet — med pianoets dynamiske muligheter (forte og piano) ble nye uttrykksformer mulige. Kammermusikken blomstret: strykekvartetten, klavertrioen og solosonate for klaver ble viktige sjangre. Beethovens sene verk pekte tydelig mot romantikken og utfordret tidens normer for hva en symfoni kunne uttrykke.",
     scoreImage: {
@@ -730,7 +736,7 @@ const eras = [
     ]
   },
   {
-    id: "romantic", label: "Romantikk", years: "ca. 1820–1900",
+    id: "romantic", label: "Romantikk", years: "ca. 1820–1900", category: "klassisk",
     accent: "#e05c8a", badgeBg: "rgba(224,92,138,0.10)", badgeText: "#eb80a4",
     summary: "Romantikken setter følelsen, det subjektive og det individuelle i absolutt sentrum. Inspirasjon — ikke håndverk alene — ble det høyeste idealet: komponisten måtte ha noe personlig å si. Nye temaer strømmet inn: lengsel etter det uoppnåelige, naturens makt, det mystiske og overnaturlige, nasjonal identitet og historisk bevissthet. Orkestrene vokste markant — fra Haydns ca. 35 musikere til Mahlers over 100. Nye instrumenter ble tatt i bruk: basstuba (1835), saxofon (1845), ventilhorn og Wagner-tuba. Harmonikken ble stadig rikere og mer kromatisk — Wagner drev dette til ytterpunktet i Tristan und Isolde (1865), der tonalitetens oppløsning nesten var fullbyrdet. Nye former vokste frem: lied-syklusen (sang for stemme og klaver), det symfoniske dikt (orkesterverk basert på litteratur eller natur), og de nasjonalromantiske komposisjonene som brukte folkemusikk bevisst. Grieg, Smetana, Sibelius og Dvorák representerer nasjonalromantikken — komponister som satte sitt lands identitet på det internasjonale musikkkartet.",
     scoreImage: {
@@ -852,7 +858,7 @@ const eras = [
     ]
   },
   {
-    id: "impressionism", label: "Impresjonisme", years: "1890–1920",
+    id: "impressionism", label: "Impresjonisme", years: "1890–1920", category: "klassisk",
     accent: "#4dd8e0", badgeBg: "rgba(77,216,224,0.10)", badgeText: "#6ee7ee",
     summary: "Impresjonismen i musikken vokste frem i Frankrike på 1890-tallet, sterkt påvirket av symbolistisk poesi og japansk billedkunst. I stedet for romantikkens sterke følelsesuttrykk søkte impresjonistene å male stemninger, farger og øyeblikk i lyd. Debussy brøt med tradisjonell funksjonsharmonikk og lot akkorder fungere som klangflater og farger i seg selv. Heltoneskalaen, modale trekk og uoppløste akkordrekker ga musikken et svevende, drømmende preg. Ravel delte idealene men holdt fastere på form og presisjon — hans musikk er impresjonistisk i klang og klassisk i struktur. Begge ble avgjørende inspiratorer for musikken som fulgte i det 20. århundret, og representerer overgangen mellom senromantikk og modernisme.",
     scoreImage: {
@@ -926,7 +932,7 @@ const eras = [
     ]
   },
   {
-    id: "modern", label: "Modernisme", years: "1900–1945",
+    id: "modern", label: "Modernisme", years: "1900–1945", category: "klassisk",
     accent: "#e8534a", badgeBg: "rgba(232,83,74,0.10)", badgeText: "#ee7870",
     summary: "Det 20. århundre innvarslet et radikalt oppgjør med den romantiske tradisjonen, i en urolig tid preget av verdenskrig, industrialisering og nye vitenskapelige gjennombrudd (Freud, Einstein). Tonaliteten — det harmoniske systemet som hadde styrt vestlig musikk i 300 år — ble utfordret, forlatt og erstattet med nye prinsipper. Flere modernistiske retninger vokste frem parallelt: impresjonismen (Debussy) lot klangfarger og atmosfære erstatte tradisjonell harmonikk; ekspresjonismen og Den andre wienerskolen (Schönberg, Berg, Webern) drev det emosjonelle uttrykket til ekstreme grenser og forlot til slutt tonaliteten helt gjennom atonal musikk og tolvtoneteknikken; neoklassisismen (Stravinskij, Hindemith, Prokofjev, den franske gruppen «Les Six») hentet tilbake barokke og klassiske former med et nytt, ofte dissonant harmonisk språk; futurismen (Russolo, Antheil) brakte industriens støy og maskinlyder inn i musikken. Stravinskij revolusjonerte rytmikken — urpremieren av Le Sacre du Printemps i Paris 1913 utløste bråk og slåsskamp i salen. Bartók smeltet over 10 000 innsamlede folkeviser fra Øst-Europa inn i sin komposisjonsstil. I USA vokste det fram en selvlært avantgarde uten bånd til europeisk tradisjon (Ives, Cowell), og nye elektroakustiske instrumenter som Theremin og Ondes Martenot pekte fram mot elektronisk musikk (Varèse). Også i Norge fulgte komponister som Fartein Valen, Geirr Tveitt og Harald Sæverud sine egne modernistiske og nasjonale veier. Filmmusikkens fremvekst skapte en ny og viktig arena for komponister.",
     scoreImage: {
@@ -1074,40 +1080,37 @@ const eras = [
     ]
   },
   {
-    id: "jazz", label: "Jazz", years: "1900–1980",
-    accent: "#f59e0b", badgeBg: "rgba(245,158,11,0.12)", badgeText: "#fbbf24",
+    id: "jazz-ragtime", label: "Ragtime / New Orleans", years: "1900–1920", category: "jazz",
+    accent: "#d97706", badgeBg: "rgba(217,119,6,0.12)", badgeText: "#f0a94d",
     scoreImage: {
       url: "images/scores/jazz-joplin-mapleleaf.jpg",
       caption: "Scott Joplin — Maple Leaf Rag (1899): ragtimens gjennombruddsverk, i førsteutgavens notetrykk",
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Maple_Leaf_Rag_1st_ed_2.jpg"
     },
-    summary: "Jazz oppsto i New Orleans rundt 1900 som en revolusjonerende blanding av afroamerikanske tradisjoner — arbeidssanger, spirituals, blues og call-and-response — og europeisk harmonikk, marsjmusikk og janitsjarband. Ragtime (Scott Joplin) og blues (Robert Johnson, Bessie Smith) la det harmoniske og rytmiske grunnlaget jazzen improviserer over. Improvisasjonen er jazzens hjerte: solisten skaper musikken der og da, i sanntid, over et harmonisk skjema. Fra New Orleans spredte jazzen seg nordover med «den store migrasjonen» — Chicago og New York ble nye sentra, og med Louis Armstrong gikk jazzen fra kollektiv improvisasjon til solistens primat. Swing-epoken på 1930–40-tallet med Ellington, Basie og Benny Goodman tok jazz til massepublikummet med de store storbandene. Bebop på 1940-tallet (Charlie Parker, Dizzy Gillespie) tok jazzen tilbake til det eksperimentelle: raskere tempi og mer komplekse akkordprogresjoner. Cool jazz og hardbop på 1950-tallet balanserte mellom ro og intensitet, mens modal jazz (Miles Davis, Kind of Blue 1959; John Coltrane) frigjorde improvisasjonen fra raske akkordskifter og lot musikerne hvile på skalaer. Free jazz brøt med jazzens konvensjoner på 1960-tallet, og fusion (Miles Davis, Bitches Brew) åpnet mot elektronikk og rock på 1970-tallet. Fra samme tiår vokste det også fram en distinkt norsk og europeisk jazzscene, med saksofonisten Jan Garbarek og plateselskapet ECM i spissen — en kammermusikalsk, klangbevisst jazzestetikk med innslag av folkemusikk.",
+    summary: "Jazz oppsto i New Orleans rundt 1900 som en revolusjonerende blanding av afroamerikanske tradisjoner — arbeidssanger, spirituals, blues og call-and-response — og europeisk harmonikk, marsjmusikk og janitsjarband. Ragtime (Scott Joplin) og blues (Robert Johnson, Bessie Smith) la det harmoniske og rytmiske grunnlaget jazzen improviserer over. New Orleans-jazzen var i denne første fasen en kollektiv kunstform: klarinett, kornett og trombone improviserte samtidig, hver med sin egen melodiske linje, over en fast marsjrytme fra tuba og trommer. Improvisasjonen er jazzens hjerte: musikerne skaper musikken der og da, i sanntid. Fra rundt 1920 spredte jazzen seg nordover med «den store migrasjonen» — Chicago og New York ble nye sentra for sjangeren, og med Louis Armstrong gikk jazzen gradvis fra kollektiv improvisasjon til solistens primat.",
     elements: [
-      { label: "Rytmikk", text: "Synkopering og swing — en triolpreget, «groovy» puls der aksentene forskyves fra sterke til svake taktslag." },
-      { label: "Melodikk", text: "Improvisert melodikk over et akkordskjema, med blånoter (senkede tersser og septimer)." },
-      { label: "Harmonikk", text: "Utvidede akkorder (septim, none, tretten), bluesskjema, og raske akkordskifter i bebop." },
-      { label: "Klang", text: "Saksofon, trompet, piano, kontrabass og trommer — hver musikers individuelle klang er viktig." },
-      { label: "Dynamikk", text: "Varierer sterkt med stil — fra intime cool jazz-klanger til kraftfulle storbandfortissimo." },
-      { label: "Form", text: "12-takters blues og 32-takters AABA-form: tema → improvisasjon over skjemaet → tema." }
+      { label: "Rytmikk", text: "Synkopering hentet fra ragtime; fast marsjrytme i bunnen, kollektiv improvisasjon på toppen." },
+      { label: "Melodikk", text: "Bluesskala og enkle, syngbare temaer — improvisert kollektivt av flere blåsere samtidig." },
+      { label: "Harmonikk", text: "Enkel bluesharmonikk og ragtimens marsjbaserte akkordskjemaer." },
+      { label: "Klang", text: "Kornett/trompet, klarinett, trombone, tuba og trommer — det klassiske New Orleans-ensemblet." },
+      { label: "Dynamikk", text: "Kraftfull, utadvendt klang beregnet på gatemusikk og dans." },
+      { label: "Form", text: "12-takters blues og ragtimens flerdelte strofeform (marsjform)." }
     ],
     styleTracks: [
       { label: "Jazzens kjennetegn", items: [
-        "Improvisasjon — solisten skaper melodien der og da over et akkordskjema",
+        "Improvisasjon — musikerne skaper melodien der og da over et akkordskjema",
         "Blåtoner (blue notes) — senkede tersser og septimer fra bluesskalaen",
-        "Synkopering — betoningen forskyves fra de sterke til de svake taktslагene",
-        "Call and response — veksling mellom solist og ensemble",
-        "Swing — en særegen rytmisk groovefølelse med triolpreg",
-        "Standardformer: 12-takters blues, 32-takters AABA-form"
+        "Synkopering — betoningen forskyves fra de sterke til de svake taktslagene",
+        "Call and response — veksling mellom solist og ensemble, arv fra arbeidssang og spirituals",
+        "Kollektiv improvisasjon — flere blåsere improviserer samtidig, hver med sin linje",
+        "Standardform: 12-takters blues"
       ]},
-      { label: "Jazzens historiske utvikling", items: [
-        "New Orleans-jazz (1900–1920): kollektiv improvisasjon, marsj og blues blandet",
-        "Chicago og New York (1920–30): solistens primat — Armstrong revolusjonerer",
-        "Swing og storband (1930–40): Ellington, Basie, Benny Goodman til massene",
-        "Bebop (1940-t): Parker, Gillespie — rask, kompleks, intellektuell",
-        "Cool jazz og hardbop (1950-t): Davis, Brubeck, Coltrane — først ro, så tilbake til rytme",
-        "Modal jazz og fri jazz (1959–60-t): Kind of Blue, Coltrane, Ornette Coleman — skalaer og total frihet",
-        "Fusion (1970-t): Miles Davis' Bitches Brew — jazz møter rock og elektronikk",
-        "Norsk og europeisk jazz (1970-t →): Jan Garbarek og plateselskapet ECM"
+      { label: "Historisk utvikling", items: [
+        "Ragtime (Scott Joplin, fra 1899): synkopert klaverstil — en viktig forløper for jazzen",
+        "New Orleans ca. 1900–1917: Storyville-distriktet og de første jazzbandene",
+        "Blues (Robert Johnson, Bessie Smith) gir jazzen dens harmoniske og emosjonelle grunnlag",
+        "«Den store migrasjonen» (fra ca. 1917–20): afroamerikanere flytter nordover — jazzen følger med",
+        "Chicago og New York på 1920-tallet: solistens primat — Armstrong revolusjonerer jazzimprovisasjonen"
       ]}
     ],
     composers: [
@@ -1122,7 +1125,39 @@ const eras = [
           "Kombinerte teknisk mestring med folkelig varme og humor"
         ],
         youtube: [{ title: "Louis Armstrong West End Blues 1928", url: "https://www.youtube.com/watch?v=W232OsTAMo8" }, { title: "Louis Armstrong What a Wonderful World", url: "https://www.youtube.com/watch?v=VqhCQZaH4Vs" }]
-      },
+      }
+    ]
+  },
+  {
+    id: "jazz-swing", label: "Swing", years: "1930–1940", category: "jazz",
+    accent: "#f59e0b", badgeBg: "rgba(245,158,11,0.12)", badgeText: "#fbbf24",
+    summary: "Swing-epoken på 1930- og 40-tallet tok jazz fra små ensembler til store storband, og fra nisjepublikum til hele den amerikanske dansegulv-nasjonen. Store orkestre ledet av Duke Ellington, Count Basie og Benny Goodman spilte arrangert, men fortsatt swingende musikk for tusenvis av dansende publikummere på ballsaler over hele landet. Swing — en særegen rytmisk groovefølelse med triolpreg — er selve navnet på epoken og dens viktigste musikalske kjennetegn. Storbandene besto typisk av seksjoner (saksofoner, trompeter, tromboner, rytmegruppe) som spilte arrangerte figurer mellom soloimprovisasjoner. Vokalister som Ella Fitzgerald og Billie Holiday sto sentralt i denne perioden, og formidlet både populærsang og dyp personlig uttrykkskraft foran de store orkestrene.",
+    elements: [
+      { label: "Rytmikk", text: "Swing — triolpreget, dansbar groove som ga epoken navnet sitt." },
+      { label: "Melodikk", text: "Syngbare temaer og arrangerte melodilinjer i seksjoner, med rom for solistiske utbrudd." },
+      { label: "Harmonikk", text: "Utvidede akkorder innenfor en fortsatt relativt enkel, dansevennlig harmonikk." },
+      { label: "Klang", text: "Store storband med sax-, trompet- og trombonseksjoner pluss rytmegruppe; karakterfulle vokalister." },
+      { label: "Dynamikk", text: "Stor dynamisk spennvidde — fra intime vokalpassasjer til fulle storband-tuttier." },
+      { label: "Form", text: "Arrangert form med faste seksjoner og innlagte solorom; 32-takters AABA-standardformer etableres." }
+    ],
+    styleTracks: [
+      { label: "Swingens kjennetegn", items: [
+        "Swing-rytme — en triolpreget, dansbar puls",
+        "Storbandarrangement: faste seksjoner (sax, trompet, trombone, rytmegruppe)",
+        "Call and response mellom bandseksjonene",
+        "Standardform: 32-takters AABA",
+        "Dansegulvet som formål — swing var populærmusikk for massene",
+        "Karismatiske orkesterledere og vokalister som publikumsmagneter"
+      ]},
+      { label: "Historisk utvikling", items: [
+        "Tidlig 1930-t: overgangen fra små New Orleans/Chicago-ensembler til storband",
+        "Cotton Club, Harlem: Duke Ellingtons faste spillested fra 1927",
+        "Benny Goodman kåres til «King of Swing» — jazz møter et bredt hvitt publikum",
+        "Count Basie og «Kansas City-swing»: enklere, mer riff-basert stil",
+        "2. verdenskrig og etterkrigstiden: storbandenes økonomi svekkes, bebop tar over som ny retning"
+      ]}
+    ],
+    composers: [
       {
         name: "Duke Ellington", years: "1899–1974",
         work: "Mood Indigo · Take the A Train · Sophisticated Lady",
@@ -1136,18 +1171,6 @@ const eras = [
         youtube: [{ title: "Duke Ellington Take the A Train", url: "https://www.youtube.com/watch?v=cb2w2m1JmCY" }, { title: "Duke Ellington Mood Indigo", url: "https://www.youtube.com/watch?v=RFUSD23ZXEw" }]
       },
       {
-        name: "Miles Davis", years: "1926–1991",
-        work: "Kind of Blue (1959) · Bitches Brew · Birth of the Cool",
-        note: "Den evige fornyeren i jazz. Davis reinventerte seg selv og jazzsjangeren flere ganger: bebop, cool jazz, modal jazz og til slutt jazz fusion med elektriske instrumenter. Kind of Blue fra 1959 er den mestselgende jazzplaten noensinne og introduserte modal jazz — improvisasjon over skalaer i stedet for akkordprogresjoner.",
-        characteristics: [
-          "Modal jazz: improvisasjon over skalaer i stedet for raskt skiftende akkorder",
-          "Lyrisk, innadvendt trompetspill — det ufullstendige og stillheten er viktig",
-          "Ledet jazz inn i fusion med rock og elektronikk på 1970-tallet",
-          "Reinventerte seg selv hvert tiår — aldri komfortabel med status quo"
-        ],
-        youtube: [{ title: "Miles Davis Kind of Blue So What", url: "https://www.youtube.com/watch?v=JXGSuW4KvcY" }, { title: "Miles Davis Birth of the Cool", url: "https://www.youtube.com/watch?v=SB8QqyQ_kwA" }]
-      },
-      {
         name: "Ella Fitzgerald", years: "1917–1996",
         work: "A-Tisket, A-Tasket · Summertime · The Cole Porter Songbook",
         note: "Jazzens første dame og en av historiens aller største vokalister. Fitzgerald var kjent for sin perfekte intonasjon, enorme vokale rekkevidde og virtuose scat-sang. Songbook-serien — komplette samlinger av de store amerikanske komponistenes sanger (Cole Porter, George Gershwin, Irving Berlin) — løftet dem til klassisk status og er blant historiens viktigste jazzinnspillinger. Hun brøt raseskiller og konvensjoner med sin musikk i en tid da det fortsatt var vanskelig for afroamerikanske artister å nå bredt ut.",
@@ -1158,21 +1181,6 @@ const eras = [
           "Bro mellom swing, bebop og populærsang"
         ],
         youtube: [{ title: "Ella Fitzgerald How High the Moon scat", url: "https://www.youtube.com/watch?v=1GUmxnYheK0" }, { title: "Ella Fitzgerald Summertime", url: "https://www.youtube.com/watch?v=u2bigf337aU" }]
-      },
-      {
-        name: "Charlie Parker", years: "1920–1955",
-        work: "Ko-Ko · Ornithology · Now's the Time",
-        note: "Med tilnavnet «Bird» var Parker den viktigste skaperen av bebop sammen med trompetisten Dizzy Gillespie. Han tok jazzen tilbake fra dansegulvet og swingens massepublikum til det eksperimentelle: lynraske tempi, avansert harmonikk og en improvisasjonsstil som utfordret både utøvere og lyttere. Parker levde et kort og turbulent liv preget av rusavhengighet, men hans musikalske innflytelse er enorm — han endret hva det vil si å improvisere i jazz.",
-        characteristics: [
-          "Lynraske tempi og virtuos, flytende frasering på altsaksofon",
-          "Improvisasjon bygget på akkordenes struktur, ikke bare den opprinnelige melodien",
-          "Avansert harmonikk: alterte akkorder, tritonusforbindelser, raske akkordskifter",
-          "Grunnla bebop sammen med Dizzy Gillespie — jazz som lyttekrevende kunstmusikk"
-        ],
-        youtube: [
-          { title: "Charlie Parker Ornithology saxophone", url: "https://www.youtube.com/watch?v=LCedJOBvzds" },
-          { title: "Charlie Parker Ko-Ko bebop", url: "https://www.youtube.com/watch?v=A6-zvY6G4AI" }
-        ]
       },
       {
         name: "Billie Holiday", years: "1915–1959",
@@ -1188,11 +1196,130 @@ const eras = [
           { title: "Billie Holiday Strange Fruit", url: "https://www.youtube.com/watch?v=-DGY9HvChXk" },
           { title: "Billie Holiday God Bless the Child", url: "https://www.youtube.com/watch?v=mp349H8G0XQ" }
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: "jazz-bebop", label: "Bebop", years: "1940-tallet", category: "jazz",
+    accent: "#fb7185", badgeBg: "rgba(251,113,133,0.12)", badgeText: "#fca5b1",
+    summary: "Bebop på 1940-tallet (Charlie Parker, Dizzy Gillespie) tok jazzen tilbake til det eksperimentelle etter storbandenes populærmusikalske storhetstid: raskere tempi, mer komplekse akkordprogresjoner og en ny vekt på solistisk virtuositet. Musikken flyttet seg fra dansegulvet til lyttekonserten — bebop var laget for å lyttes til, ikke danses til. Små ensembler (kvintett, kvartett) erstattet storbandet, og musikerne improviserte over stadig raskere og mer avanserte akkordskjemaer i uformelle jam-økter på klubber som Minton's Playhouse i Harlem.",
+    elements: [
+      { label: "Rytmikk", text: "Lynraske tempi og komplekse, uforutsigbare rytmiske aksenter." },
+      { label: "Melodikk", text: "Virtuos, flytende improvisasjon bygget på akkordenes toner snarere enn den opprinnelige melodien." },
+      { label: "Harmonikk", text: "Avansert harmonikk — alterte akkorder, tritonusforbindelser og raske akkordskifter." },
+      { label: "Klang", text: "Små ensembler (kvintett/kvartett) med altsaksofon, trompet, piano, bass og trommer." },
+      { label: "Dynamikk", text: "Intens, konsentrert klubbmusikk — beregnet på lytting, ikke dans." },
+      { label: "Form", text: "Standardform (ofte 32-takters AABA) brukt som grunnlag for stadig mer avansert improvisasjon." }
+    ],
+    styleTracks: [
+      { label: "Bebopens kjennetegn", items: [
+        "Lynraske tempi og virtuos improvisasjon",
+        "Avansert harmonikk: alterte akkorder, tritonusforbindelser, raske akkordskifter",
+        "Improvisasjon bygget på akkordstrukturen — ikke bare den opprinnelige melodien",
+        "Små ensembler (kvartett/kvintett) erstatter storbandet",
+        "Musikk for lytting, ikke dans — jazz som «kunstmusikk»",
+        "Uformelle jam-økter og kappestrid mellom solister sentralt i utviklingen"
+      ]},
+      { label: "Historisk utvikling", items: [
+        "Minton's Playhouse, Harlem: uformelle jam-økter der bebop tar form fra tidlig 1940-tall",
+        "Charlie Parker og Dizzy Gillespie som sjangerens ledende skikkelser",
+        "Reaksjon mot storbandenes kommersielle, dansevennlige swing",
+        "Bebop legger grunnlaget for all senere moderne jazzimprovisasjon",
+        "Baner vei for cool jazz og hardbop på 1950-tallet"
+      ]}
+    ],
+    composers: [
+      {
+        name: "Charlie Parker", years: "1920–1955",
+        work: "Ko-Ko · Ornithology · Now's the Time",
+        note: "Med tilnavnet «Bird» var Parker den viktigste skaperen av bebop sammen med trompetisten Dizzy Gillespie. Han tok jazzen tilbake fra dansegulvet og swingens massepublikum til det eksperimentelle: lynraske tempi, avansert harmonikk og en improvisasjonsstil som utfordret både utøvere og lyttere. Parker levde et kort og turbulent liv preget av rusavhengighet, men hans musikalske innflytelse er enorm — han endret hva det vil si å improvisere i jazz.",
+        characteristics: [
+          "Lynraske tempi og virtuos, flytende frasering på altsaksofon",
+          "Improvisasjon bygget på akkordenes struktur, ikke bare den opprinnelige melodien",
+          "Avansert harmonikk: alterte akkorder, tritonusforbindelser, raske akkordskifter",
+          "Grunnla bebop sammen med Dizzy Gillespie — jazz som lyttekrevende kunstmusikk"
+        ],
+        youtube: [
+          { title: "Charlie Parker Ornithology saxophone", url: "https://www.youtube.com/watch?v=LCedJOBvzds" },
+          { title: "Charlie Parker Ko-Ko bebop", url: "https://www.youtube.com/watch?v=A6-zvY6G4AI" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "jazz-cool", label: "Cool jazz / Hardbop", years: "1950-tallet", category: "jazz",
+    accent: "#38bdf8", badgeBg: "rgba(56,189,248,0.12)", badgeText: "#7dd3fc",
+    summary: "Cool jazz og hardbop på 1950-tallet balanserte mellom ro og intensitet som to reaksjoner på bebopens intensitet. Cool jazz (Miles Davis' Birth of the Cool, Dave Brubeck) dyrket et roligere, mer avslappet og arrangert lydbilde, ofte med tydelig innflytelse fra klassisk musikk og en lettere, mer transparent klang. Hardbop svarte med å bringe bluesens og gospelens rytmiske drivkraft og følelsesintensitet tilbake inn i det etter hvert mer akademiske bebop-språket. Miles Davis, som allerede hadde spilt med Charlie Parker, ble et sentralt bindeledd mellom disse strømningene og fortsatte å redefinere jazzen gjennom hele tiåret.",
+    elements: [
+      { label: "Rytmikk", text: "Roligere, mer avslappet puls i cool jazz; bluesens tyngre groove tilbake i hardbop." },
+      { label: "Melodikk", text: "Lyrisk, ofte innadvendt melodiføring med rom for stillhet og lange toner." },
+      { label: "Harmonikk", text: "Mer arrangert, gjennomtenkt harmonikk — tidvis hentet fra klassisk musikk." },
+      { label: "Klang", text: "Lettere, mer transparent instrumentering enn bebopens intensitet; trompet i sentrum hos Davis." },
+      { label: "Dynamikk", text: "Behersket og nyansert — kontrasten til bebopens fyrverkeri er selve poenget." },
+      { label: "Form", text: "Fortsatt standardformer, men med mer arrangerte introduksjoner og avslutninger." }
+    ],
+    styleTracks: [
+      { label: "Kjennetegn", items: [
+        "Cool jazz: roligere tempo, lettere klang, ofte klassisk-inspirert arrangement",
+        "Hardbop: bluesens og gospelens driv og følelsesintensitet tilbake i bebop-språket",
+        "Mer arrangerte introduksjoner, temaer og avslutninger enn i ren bebop",
+        "Lyrisk, «syngende» soloføring — særlig i cool jazz",
+        "Fortsatt standardformer (AABA, blues) som improvisasjonsgrunnlag"
+      ]},
+      { label: "Historisk utvikling", items: [
+        "Miles Davis' Birth of the Cool (innspilt 1949–50, utgitt 1957) definerer cool jazz-lyden",
+        "Dave Brubeck og vestkyst-jazzen dyrker en lettere, mer akademisk stil",
+        "Hardbop vokser fram som motreaksjon, særlig på østkysten (Art Blakey, Horace Silver)",
+        "Miles Davis fortsetter å utvikle seg videre mot modal jazz mot slutten av tiåret"
+      ]}
+    ],
+    composers: [
+      {
+        name: "Miles Davis", years: "1926–1991",
+        work: "Birth of the Cool · Kind of Blue (1959) · Bitches Brew",
+        note: "Den evige fornyeren i jazz. Davis reinventerte seg selv og jazzsjangeren flere ganger: bebop, cool jazz, modal jazz og til slutt jazz fusion med elektriske instrumenter. Birth of the Cool (1957) definerte cool jazz-estetikken med sin lette, arrangerte klang, og la grunnlaget for Davis' videre utforskning gjennom hele 1950-tallet.",
+        characteristics: [
+          "Birth of the Cool: lettere, mer arrangert klang som motvekt til bebopens intensitet",
+          "Lyrisk, innadvendt trompetspill — det ufullstendige og stillheten er viktig",
+          "Sentral bindeledd mellom bebop, cool jazz og senere modal jazz",
+          "Reinventerte seg selv hvert tiår — aldri komfortabel med status quo"
+        ],
+        youtube: [{ title: "Miles Davis Birth of the Cool", url: "https://www.youtube.com/watch?v=SB8QqyQ_kwA" }, { title: "Miles Davis Kind of Blue So What", url: "https://www.youtube.com/watch?v=JXGSuW4KvcY" }]
+      }
+    ]
+  },
+  {
+    id: "jazz-modal", label: "Modal / Fri jazz", years: "1959–1960-tallet", category: "jazz",
+    accent: "#a78bfa", badgeBg: "rgba(167,139,250,0.12)", badgeText: "#c4b5fd",
+    summary: "Modal jazz (Miles Davis, Kind of Blue 1959; John Coltrane) frigjorde improvisasjonen fra bebopens raske akkordskifter og lot musikerne hvile på skalaer (moduser) over lengre strekk — en åpnere, mer meditativ tilnærming til improvisasjon. Kind of Blue er fortsatt den mestselgende jazzplaten noensinne. Samtidig brøt fri jazz (Ornette Coleman) enda mer radikalt med jazzens konvensjoner utover 1960-tallet — fast akkordskjema, taktart og til og med tonalitet ble forlatt til fordel for total improvisatorisk frihet. John Coltrane beveget seg i disse årene fra bebopens harmoniske kompleksitet, via modal jazz, mot en stadig friere og mer spirituelt ladet uttrykksform.",
+    elements: [
+      { label: "Rytmikk", text: "Friere puls uten bebopens hastverk; i fri jazz kan taktart og puls oppløses helt." },
+      { label: "Melodikk", text: "Improvisasjon over skalaer (moduser) i stedet for akkorder; i fri jazz uten fast tonalt senter." },
+      { label: "Harmonikk", text: "Statiske, langsomt skiftende akkorder i modal jazz; funksjonsharmonikken forlates helt i fri jazz." },
+      { label: "Klang", text: "Klassisk kvintettbesetning, men med mer rom og stillhet i klangbildet." },
+      { label: "Dynamikk", text: "Fra meditativ ro til intens, ekstatisk klimaks — særlig hos Coltrane mot slutten av karrieren." },
+      { label: "Form", text: "Åpne, ofte lange improvisasjoner løsrevet fra faste kompsformer." }
+    ],
+    styleTracks: [
+      { label: "Kjennetegn", items: [
+        "Modal jazz: improvisasjon over skalaer (moduser) i stedet for raskt skiftende akkorder",
+        "Fri jazz: taktart, akkordskjema og tonalitet kan forlates helt",
+        "Mer rom, stillhet og lengre, meditative forløp enn i bebop",
+        "«Sheets of sound» (Coltrane): tette strømmer av toner spilt i høyt tempo",
+        "Kollektiv, ofte spirituelt ladet improvisasjon i fri jazz (Coleman, sene Coltrane)"
+      ]},
+      { label: "Historisk utvikling", items: [
+        "Kind of Blue (1959): Miles Davis introduserer modal jazz for et bredt publikum",
+        "John Coltrane utforsker modal jazz videre, bl.a. med Davis' kvintett",
+        "Ornette Coleman og «free jazz» (fra album med samme navn, 1960) bryter radikalt med konvensjonene",
+        "Coltranes sene karriere (A Love Supreme, 1965) beveger seg mot fri, spirituell improvisasjon"
+      ]}
+    ],
+    composers: [
       {
         name: "John Coltrane", years: "1926–1967",
         work: "Giant Steps · A Love Supreme",
-        note: "Saksofonist som utvidet bebopens harmoniske grenser til det ekstreme. Giant Steps (1959) er berømt for sine lynraske akkordskifter — såkalte «Coltrane changes» — som fortsatt regnes som noe av det mest krevende å improvisere over i jazzrepertoaret. Coltrane utforsket etter hvert modal jazz sammen med Miles Davis, og beveget seg mot slutten av karrieren mot fri, spirituelt ladet improvisasjon. A Love Supreme (1965) er et dypt personlig, religiøst uttrykk formet som et helhetlig komponert jazzverk.",
+        note: "Saksofonist som utvidet bebopens harmoniske grenser til det ekstreme før han beveget seg mot modal og fri jazz. Giant Steps (1959) er berømt for sine lynraske akkordskifter — såkalte «Coltrane changes». Coltrane utforsket etter hvert modal jazz sammen med Miles Davis, og beveget seg mot slutten av karrieren mot fri, spirituelt ladet improvisasjon. A Love Supreme (1965) er et dypt personlig, religiøst uttrykk formet som et helhetlig komponert jazzverk.",
         characteristics: [
           "«Giant Steps» (1959) — ekstremt hurtige akkordskifter, kjent som «Coltrane changes»",
           "«Sheets of sound» — tette strømmer av toner spilt i høyt tempo",
@@ -1203,7 +1330,37 @@ const eras = [
           { title: "John Coltrane Giant Steps", url: "https://www.youtube.com/watch?v=KwIC6B_dvW4" },
           { title: "John Coltrane A Love Supreme part 1", url: "https://www.youtube.com/watch?v=Dmx2WuUPVcs" }
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: "jazz-fusion", label: "Fusion / Norsk jazz", years: "1970-tallet →", category: "jazz",
+    accent: "#34d399", badgeBg: "rgba(52,211,153,0.12)", badgeText: "#6ee7b7",
+    summary: "Free jazz og modal jazz hadde åpnet jazzen mot total frihet — fusion åpnet den i stedet mot rock og elektronikk. Miles Davis' Bitches Brew (1970) er fusionens definerende plate: elektrisk piano, elektrisk bass, forvrengt trompet og rockrytmer smeltet sammen med jazzens improvisasjonstradisjon. Fra samme tiår vokste det også fram en distinkt norsk og europeisk jazzscene, med saksofonisten Jan Garbarek og plateselskapet ECM i spissen — en kammermusikalsk, klangbevisst jazzestetikk med innslag av folkemusikk, som viste at jazz etter 1970 kunne utvikle sterke, selvstendige uttrykk langt utenfor USA.",
+    elements: [
+      { label: "Rytmikk", text: "Rockrytmer og elektronisk drevne grooves erstatter swingens triolpreg." },
+      { label: "Melodikk", text: "Enkle, ofte modale temaer som ramme rundt lange, elektrisk forsterkede improvisasjoner." },
+      { label: "Harmonikk", text: "Statiske vamper og enkle akkordflater i fusion; klangfargebasert harmonikk i den europeiske ECM-tradisjonen." },
+      { label: "Klang", text: "Elektrisk piano, elektrisk bass og forvrengt trompet (fusion); klar, «kald» akustisk klang (Garbarek/ECM)." },
+      { label: "Dynamikk", text: "Fra rockens kraft og volum til ECM-estetikkens lavmælte, romslige lydbilde." },
+      { label: "Form", text: "Løsere, ofte lange, prosessorienterte forløp uten fast tema–improvisasjon–tema-struktur." }
+    ],
+    styleTracks: [
+      { label: "Kjennetegn", items: [
+        "Fusion: jazz møter rock, funk og elektronikk — elektriske instrumenter tas i bruk",
+        "Norsk/europeisk jazz (ECM): kammermusikalsk, klangbevisst estetikk med innslag av folkemusikk",
+        "Statiske akkordflater («vamper») i stedet for raske akkordskifter",
+        "Lange, prosessorienterte improvisasjoner",
+        "Studioteknologi og effekter blir en del av det musikalske uttrykket"
+      ]},
+      { label: "Historisk utvikling", items: [
+        "Miles Davis' Bitches Brew (1970): fusionens definerende plate",
+        "Weather Report, Mahavishnu Orchestra og andre fusion-grupper på 1970-tallet",
+        "Jan Garbarek og plateselskapet ECM (grunnlagt 1969) bygger en distinkt europeisk jazzlyd",
+        "Jazz etter 1970 sprer seg til sterke, selvstendige regionale scener verden over"
+      ]}
+    ],
+    composers: [
       {
         name: "Jan Garbarek", years: "f. 1947",
         work: "Afric Pepperbird · I Took Up the Runes",
@@ -1222,14 +1379,14 @@ const eras = [
     ]
   },
   {
-    id: "rock", label: "Rock", years: "1950–1980",
+    id: "rock-fifties", label: "Rock'n'Roll", years: "1950-tallet", category: "rock",
     accent: "#ef4444", badgeBg: "rgba(239,68,68,0.12)", badgeText: "#f87171",
     scoreImage: {
       url: "images/scores/rock-12barblues.png",
       caption: "Standard 12-takters bluesskjema i C — akkordgrunnlaget bak utallige rock'n'roll-låter",
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Twelve_bar_blues_in_C.png"
     },
-    summary: "Rock'n'roll vokste frem på 1950-tallet som et kulturelt jordskjelv: ungdommen fikk sin egen musikk, kroppen ble del av fremføringen, og generasjonskløften ble synlig for første gang i historien. Chuck Berry, Elvis Presley og Little Richard kombinerte afroamerikansk rhythm and blues med hvit country og skapte noe som sjokkerte foreldre og fascinerte ungdom verden over. Samtidig utviklet afroamerikansk musikk seg videre i egne spor: gospel og R&B smeltet sammen til soul (Ray Charles, Aretha Franklin, James Brown), og plateselskapet Motown i Detroit skapte en dansbar, kommersielt vellykket «svart popmusikk» med grupper som The Supremes. Fra Storbritannia kom «the British Invasion» med The Beatles, Rolling Stones, The Who og The Kinks — grupper som tok amerikansk rhythm and blues og speilet den tilbake med ny energi. The Beatles brakte rocken til en ny dimensjon: de brukte studioet som komposisjonsinstrument og kombinerte populær appell med kunstnerisk ambisjon, mens Bob Dylan ga teksten en litterær og politisk tyngde den aldri hadde hatt i populærmusikken. Rundt 1967 ble rocken til «samtidsmusikk» — albumet ble et kunstnerisk uttrykk i seg selv, og psykedelisk rock (Jimi Hendrix, Pink Floyd) utforsket bevissthetsutvidende lyd med nye studioeffekter og elektroniske instrumenter som Moog-synthesizeren. Derfra forgrenet rocken seg videre til hard rock (Led Zeppelin, Deep Purple), progrock (Pink Floyd, Yes, King Crimson) og country rock (The Byrds, Eagles), før punk (Sex Pistols, The Clash, Ramones) rundt 1976–77 svarte med et rått, tilbake-til-røttene opprør mot alt det utsvevende.",
+    summary: "Rock'n'roll vokste frem på 1950-tallet som et kulturelt jordskjelv: ungdommen fikk sin egen musikk, kroppen ble del av fremføringen, og generasjonskløften ble synlig for første gang i historien. Chuck Berry, Elvis Presley og Little Richard kombinerte afroamerikansk rhythm and blues med hvit country og skapte noe som sjokkerte foreldre og fascinerte ungdom verden over. Samtidig utviklet afroamerikansk musikk seg videre i egne spor: gospel og R&B smeltet sammen til soul (Ray Charles, Aretha Franklin, James Brown), og plateselskapet Motown i Detroit skapte en dansbar, kommersielt vellykket «svart popmusikk» med grupper som The Supremes. Rock'n'roll ble raskt en global ungdomskultur, med Chuck Berrys gitarriff og Elvis' sceneopptredener som selve symbolene på det nye.",
     elements: [
       { label: "Rytmikk", text: "Sterk backbeat (trommen slår tydelig på 2. og 4. taktslag) over en rett 4/4-puls." },
       { label: "Melodikk", text: "Enkel, syngbar melodikk, ofte hentet fra bluesskalaen." },
@@ -1245,18 +1402,13 @@ const eras = [
         "Sterk backbeat — trommen slår tydelig på 2. og 4. taktslag",
         "Enkel harmonikk: I–IV–V akkordprogresjoner fra bluesskjemaet",
         "Tekst om ungdom, kjærlighet, frihet og opprør",
-        "Artisten som stjerne og ikon — sceneshow og image like viktig som musikk",
-        "Soul og funk (James Brown, Aretha Franklin): rytmisk groove og politisk bevissthet"
+        "Artisten som stjerne og ikon — sceneshow og image like viktig som musikk"
       ]},
-      { label: "Rockens utvikling", items: [
-        "Rock'n'roll (1950-t): Chuck Berry, Elvis, Little Richard — røttene",
-        "Soul og Motown (1960-t): Aretha Franklin, James Brown, The Supremes",
-        "The British Invasion (1964-): Beatles og Rolling Stones til USA",
-        "Psykedelisk rock (1967–68): studio som komposisjonsinstrument — Hendrix, Pink Floyd",
-        "Woodstock (1969): rockfestivalen som symbol på en hel generasjon",
-        "Hard rock og progrock (1970-t): Led Zeppelin, Deep Purple, Pink Floyd, Yes",
-        "Punk (1976–77): Sex Pistols, The Clash — tilbake til rå enkelhet",
-        "Bob Dylan: folk-rock og teksten som litteratur og samfunnskritikk"
+      { label: "Historisk utvikling", items: [
+        "Chuck Berry, Elvis, Little Richard — rock'n'rollens grunnleggere",
+        "Sun Studio i Memphis og Sam Phillips oppdager unge, hvite artister som spiller «svart» musikk",
+        "Soul og Motown (parallelt, 1960-t): Aretha Franklin, James Brown, The Supremes",
+        "Rock'n'roll blir en global ungdomskultur og legger grunnlaget for all senere rock"
       ]}
     ],
     composers: [
@@ -1283,7 +1435,38 @@ const eras = [
           "Symbol på ungdomsopprøret mot etterkrigstidens konservative kultur"
         ],
         youtube: [{ title: "Elvis Presley Jailhouse Rock", url: "https://www.youtube.com/watch?v=PpsUOOfb-vE" }, { title: "Elvis Presley Hound Dog Ed Sullivan Show", url: "https://www.youtube.com/watch?v=aNYWl13IWhY" }]
-      },
+      }
+    ]
+  },
+  {
+    id: "rock-sixties", label: "British Invasion / Psykedelia", years: "1960-tallet", category: "rock",
+    accent: "#8b5cf6", badgeBg: "rgba(139,92,246,0.12)", badgeText: "#ac96f8",
+    summary: "Fra Storbritannia kom «the British Invasion» med The Beatles, Rolling Stones, The Who og The Kinks — grupper som tok amerikansk rhythm and blues og speilet den tilbake med ny energi. The Beatles brakte rocken til en ny dimensjon: de brukte studioet som komposisjonsinstrument og kombinerte populær appell med kunstnerisk ambisjon, mens Bob Dylan ga teksten en litterær og politisk tyngde den aldri hadde hatt i populærmusikken. Rundt 1967 ble rocken til «samtidsmusikk» — albumet ble et kunstnerisk uttrykk i seg selv, og psykedelisk rock (Jimi Hendrix) utforsket bevissthetsutvidende lyd med nye studioeffekter og elektroniske instrumenter som Moog-synthesizeren. Woodstock-festivalen i 1969 ble selve symbolet på en hel generasjons musikalske og politiske opprør.",
+    elements: [
+      { label: "Rytmikk", text: "Friere, mer eksperimentell rytmikk enn 1950-tallets strenge backbeat; flerlags studiorytmikk." },
+      { label: "Melodikk", text: "Fra enkel pop-melodikk (tidlig Beatles) til eksperimentelle, ikke-vestlige skalaer (sitar/India-inspirasjon)." },
+      { label: "Harmonikk", text: "Utvidet utover I–IV–V med uvanlige akkordforbindelser og modale innslag." },
+      { label: "Klang", text: "Nye studioeffekter, sitar, mellotron, feedback og forvrengt gitar." },
+      { label: "Dynamikk", text: "Fra akustisk intimitet (Dylan) til Hendrix' eksplosive feedback-lyd." },
+      { label: "Form", text: "Konseptalbumet oppstår — hele plater bindes sammen tematisk, ikke bare enkeltlåter." }
+    ],
+    styleTracks: [
+      { label: "Kjennetegn", items: [
+        "Studio som komposisjonsverktøy: lydeffekter, tape loops, uvanlige instrumenter",
+        "Konseptalbumet — pop som sammenhengende kunstnerisk uttrykk",
+        "Tekst som litteratur og samfunnskritikk (Dylan)",
+        "Psykedeliske effekter og bevissthetsutvidende lyd",
+        "Studioteknologi (flerspors-opptak) åpner for stadig mer ambisiøse produksjoner"
+      ]},
+      { label: "Historisk utvikling", items: [
+        "The British Invasion (1964–): Beatles og Rolling Stones erobrer USA",
+        "Bob Dylan går over til elektrisk backing i 1965 — «folk rock» oppstår",
+        "Sgt. Pepper's Lonely Hearts Club Band (1967): rockens første konseptalbum",
+        "Psykedelisk rock (1967–68): Hendrix, tidlig Pink Floyd — nye studioeffekter og østlig inspirasjon",
+        "Woodstock (1969): rockfestivalen som symbol på en hel generasjon"
+      ]}
+    ],
+    composers: [
       {
         name: "The Beatles", years: "1960–1970",
         work: "Sgt. Pepper's Lonely Hearts Club Band · Strawberry Fields Forever · A Day in the Life",
@@ -1343,7 +1526,38 @@ const eras = [
           { title: "Jimi Hendrix Purple Haze", url: "https://www.youtube.com/watch?v=WGoDaYjdfSg" },
           { title: "Jimi Hendrix All Along the Watchtower", url: "https://www.youtube.com/watch?v=TLV4_xaYynY" }
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: "rock-seventies", label: "Hard rock / Progrock", years: "1970-tallet", category: "rock",
+    accent: "#f97316", badgeBg: "rgba(249,115,22,0.12)", badgeText: "#fb9b52",
+    summary: "Fra slutten av 1960-tallet forgrenet rocken seg videre til tyngre og mer ambisiøse retninger. Hard rock (Led Zeppelin, Deep Purple) dyrket kraftfulle riff, forvrengt gitar og et rått, energisk uttrykk — en direkte forløper for senere metal. Progrock (Pink Floyd, Yes, King Crimson) gikk motsatt vei og hentet inspirasjon fra klassisk musikk og jazz: lange, komplekse komposisjoner, uvanlige taktarter, synthesizere og konseptalbum som utforsket filosofiske og samfunnskritiske temaer. Country rock (The Byrds, Eagles) representerte en tredje retning, tilbake til enklere, mer akustiske røtter. Felles for 1970-tallets rock var en ny ambisjon om at rock kunne være «kunst» på linje med klassisk musikk — store konserter, elaborerte sceneshow og gjennomarbeidede plateomslag ble en del av opplevelsen.",
+    elements: [
+      { label: "Rytmikk", text: "Uregelmessige taktarter og komplekse rytmiske strukturer i progrock; tunge, drivende rytmer i hard rock." },
+      { label: "Melodikk", text: "Lange, tematisk sammenhengende melodiske forløp; instrumentale soloer får stor plass." },
+      { label: "Harmonikk", text: "Klassisk- og jazzinspirert harmonikk i progrock; kraftfulle powerchords i hard rock." },
+      { label: "Klang", text: "Synthesizere, mellotron og et helhetlig, produsert lydbilde; tung, forvrengt gitarklang i hard rock." },
+      { label: "Dynamikk", text: "Store kontraster innenfor lange, gjennomkomponerte verk." },
+      { label: "Form", text: "Konseptalbum og suiter — hele plater som én sammenhengende komposisjon." }
+    ],
+    styleTracks: [
+      { label: "Kjennetegn", items: [
+        "Virtuositet og teknisk mestring som ideal",
+        "Konseptalbum med filosofiske eller samfunnskritiske temaer",
+        "Synthesizere og et helhetlig, atmosfærisk lydbilde (progrock)",
+        "Kraftfulle riff og powerchords (hard rock)",
+        "Elaborerte sceneshow: lys, røyk, filmprojeksjoner og scenografi"
+      ]},
+      { label: "Historisk utvikling", items: [
+        "Hard rock vokser fram fra sent 1960-tall: Led Zeppelin, Deep Purple, Black Sabbath",
+        "King Crimson og progrockens gjennombrudd rundt 1969–70",
+        "Pink Floyds The Dark Side of the Moon (1973) blir en av historiens mestselgende plater",
+        "Country rock (The Byrds, Eagles) som en roligere, akustisk parallell retning",
+        "1970-tallets ambisjon om rock som «kunst» baner vei for punkens motreaksjon"
+      ]}
+    ],
+    composers: [
       {
         name: "Pink Floyd", years: "1965–1994/2014",
         work: "Time · Comfortably Numb",
@@ -1358,7 +1572,37 @@ const eras = [
           { title: "Pink Floyd Time Dark Side of the Moon", url: "https://www.youtube.com/watch?v=Qr0-7Ds79zo" },
           { title: "Pink Floyd Comfortably Numb", url: "https://www.youtube.com/watch?v=_FrOQC-zEog" }
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: "rock-punk", label: "Punk", years: "1976–1977", category: "rock",
+    accent: "#facc15", badgeBg: "rgba(250,204,21,0.12)", badgeText: "#fde047",
+    summary: "Punk (Sex Pistols, The Clash, Ramones) rundt 1976–77 svarte på 1970-tallets stadig mer ambisiøse og virtuose rock med et rått, tilbake-til-røttene opprør. Der progrock dyrket lange komposisjoner og teknisk mestring, dyrket punken korte, enkle låter med rå energi og en bevisst amatøraktig holdning — «alle kan starte et band». Bevegelsen var like mye en sosial og politisk protest som en musikalsk stil: mot arbeidsledighet, autoritetstro og etablissementet, formidlet gjennom en gjør-det-selv-estetikk som spredte seg fra musikken til klær, plateomslag og fanziner.",
+    elements: [
+      { label: "Rytmikk", text: "Rask, enkel og hamrende rytmikk uten synkopering eller finesser." },
+      { label: "Melodikk", text: "Enkle, ofte skrikende eller talenære melodier." },
+      { label: "Harmonikk", text: "Svært enkel — ofte bare tre akkorder («tre akkorder er nok»)." },
+      { label: "Klang", text: "Rå, uslipt gitar- og vokalklang; bevisst lav produksjonsverdi." },
+      { label: "Dynamikk", text: "Gjennomgående høyt og aggressivt, uten dynamiske nyanser." },
+      { label: "Form", text: "Korte låter (ofte under to minutter), sjelden med instrumentale mellomspill." }
+    ],
+    styleTracks: [
+      { label: "Kjennetegn", items: [
+        "Rå enkelhet — tre-akkorders arrangementer og korte låter",
+        "Bevisst skepsis til virtuositet — et opprør mot progrockens og hard rockens overdrivelser",
+        "Politisk ladede, provoserende tekster",
+        "Gjør-det-selv-estetikk: produksjon og distribusjon utenom de store plateselskapene",
+        "DIY-idealet sprer seg til klesstil, plateomslag og fanziner"
+      ]},
+      { label: "Historisk utvikling", items: [
+        "London og New York (1975–76): punk-scenen vokser fram i klubber som CBGB",
+        "Sex Pistols' «Anarchy in the U.K.» (1976): punkens gjennombruddssingel",
+        "«God Save the Queen» under dronningens sølvjubileum (1977) skaper nasjonal skandale",
+        "Punkens gjør-det-selv-idé får stor betydning for indie- og post-punk-scenen som følger"
+      ]}
+    ],
+    composers: [
       {
         name: "Sex Pistols", years: "1975–1978",
         work: "Anarchy in the U.K. · God Save the Queen",
@@ -1377,7 +1621,7 @@ const eras = [
     ]
   },
   {
-    id: "contemporary", label: "Samtid", years: "1945–i dag",
+    id: "contemporary", label: "Samtid", years: "1945–i dag", category: "klassisk",
     accent: "#5ecf4a", badgeBg: "rgba(94,207,74,0.10)", badgeText: "#7ddc64",
     summary: "Etter 1945 eksploderte musikken i et mangfold uten historisk sidestykke. Avantgarden (Boulez, Stockhausen, Messiaen) drev serialismen til ytterpunktet — alle musikalske parametere ble styrt av matematiske rekker — mens John Cage utforsket det motsatte ytterpunktet med tilfeldighetsmusikk (aleatorikk) og et preparert piano. Den polske klangflateskolen (Ligeti, Penderecki, Xenakis) lot tette klangmasser og «lydskyer» erstatte tradisjonell melodi og harmoni. Som motreaksjon på kompleksiteten vokste minimalismen frem i USA på 1960-tallet: Steve Reich, Philip Glass og Terry Riley skapte musikk av repetitive, gradvis endrende mønstre med hypnotisk virkning. Elektronisk musikk åpnet for helt nye klanger — fra tidlige båndstudioopptak (musique concrète, Stockhausens elektroniske verk) til synthesizere, samplere og til slutt datamaskinen som primært komposisjonsverktøy; nordmannen Arne Nordheim ble en internasjonal pioner på feltet. Arvo Pärt, John Tavener og Sofia Gubaidulina skapte en ny spiritualitet i musikken — enkel, meditativ og dypt inntrykksrik. Fra 1970-tallet fulgte postmodernisme og stilblanding, der sitater og elementer fra ulike sjangre og epoker sidestilles fritt — en tendens som har fortsatt inn på 2000-tallet med retninger som gjerne kalles nyromantikk, polystilisme og «indie-klassisk». I populærmusikken fulgte punk, synth-pop, hip-hop og elektronisk dansmusikk hverandre i rask rekkefølge fra 1970-tallet. Globaliseringen brakte musikk fra hele verden inn i lytterens bevissthet — afrobeat, reggae, verdensmusikk og mange andre strømmer smelter stadig mer sammen med vestlig kunstmusikk og populærmusikk.",
     elements: [
@@ -1518,7 +1762,7 @@ const eras = [
     ]
   },
   {
-    id: "folkemusikk", label: "Folkemusikk", years: "ca. 1200–i dag",
+    id: "folkemusikk", label: "Folkemusikk", years: "ca. 1200–i dag", category: "annet",
     accent: "#a67c52", badgeBg: "rgba(166,124,82,0.12)", badgeText: "#c9a476",
     summary: "Norsk folkemusikk er en muntlig overlevert tradisjon som strekker seg fra middelalderen og fram til i dag, båret videre fra spelemann til spelemann og fra kvedar til kvedar uten notasjon. Den deles gjerne i en instrumental og en vokal tradisjon. Den instrumentale tradisjonen er først og fremst dansemusikk: bygdedansslåttene omfatter både faste taktdanser som gangar, halling og rull, og den mer særnorske, ujevnt taktbetonte springar/pols-tradisjonen, i tillegg til nyere runddanser som vals og reinlender. Hovedinstrumentet er hardingfelen — en fiolinvariant med understrenger som klinger med — men også vanlig fele, munnharpe, langeleik og seterinstrumenter som lur, bukkehorn og seljefløyte har lange tradisjoner. Den vokale tradisjonen omfatter kveding (folkelig sang med ornamentikk og pressa stemme), stev (korte, rimede dikt i faste versemål: gamlestev, nystev og slåttestev), episke folkeviser og ballader — der «Draumkvedet», nedtegnet i Telemark rundt 1850, står i en særstilling som norsk middelalderdiktnings fremste visjonsdikt — samt religiøse folketoner, arbeidssanger og skillingsviser. Folkemusikken hadde en sentral sosial funksjon ved bryllup, marked og gårdsarbeid, men ble på 1800-tallet også utsatt for religiøs fordømmelse — mange feler ble brent på såkalte «felebål» fordi de ble knyttet til dans og synd. Nasjonalromantikken løftet samtidig hardingfela til nasjonalsymbol, med spelemenn som Myllarguten som folkehelter. Etter en nedgangsperiode kom en sterk folkemusikkrevival fra 1970-tallet, og fra 1980–90-tallet har arrangert folkemusikk og fusion — der tradisjonelle slåtter og kvad møter jazz, rock og verdensmusikk — gitt tradisjonen nytt publikum, blant annet gjennom samarbeidet mellom kvedaren Agnes Buen Garnås og saksofonisten Jan Garbarek.",
     elements: [
@@ -1611,7 +1855,7 @@ const eras = [
     ]
   },
   {
-    id: "samisk", label: "Samisk musikk", years: "Uviss alder – i dag",
+    id: "samisk", label: "Samisk musikk", years: "Uviss alder – i dag", category: "annet",
     accent: "#eab308", badgeBg: "rgba(234,179,8,0.12)", badgeText: "#fbd34d",
     summary: "Joik (nordsamisk: luohti/vuolle) er den samiske folkemusikktradisjonen og regnes som en av Europas eldste sammenhengende vokaltradisjoner — hvor gammel den er, er ukjent, men de første skriftlige nedtegnelsene av joiketekster er fra 1670-tallet. Joik skiller seg grunnleggende fra vestlig sangtradisjon: man sier at man joiker en person, et dyr eller et sted — ikke om det. Melodien er selve identiteten til det som joikes, og en egen personjoik regnes som en ærefull gave. Joiken deles gjerne i tre hovedkategorier: rituelle joiker, knyttet til sjamanen (noaidien) og runebommen og brukt for å komme i kontakt med åndeverdenen; fortellende joiker, lange episke joikedikt som «solsønnen» — samenes nasjonale epos; og personifiserte joiker om personer, dyr og steder. Musikalsk er joik ofte bygget på en enkel, firetaktig form med pentatone skalaer, halvhøye intervaller og en presset, «trang» klang, gjerne sunget med stavelsestekst (lo, na, go) i stedet for ord. Det finnes betydelige regionale forskjeller — sørsamisk, lulesamisk, nordsamisk, sjøsamisk og skoltesamisk joik har alle sine egne stiltrekk. Fra 1600-tallet ble joik og runebomme fordømt av misjonen som djevelens verk; runebommer ble brent, og bare tre er bevart i Norge i dag. Fornorskningspolitikken fortsatte å undertrykke samisk språk og kultur langt inn på 1900-tallet, og i Kautokeino ble joik direkte forbudt i skolen fra 1953 til forbudet ble opphevet i 1993. Samtidig har joiken hatt en sterk renessanse: «Samid ædnan» i Melodi Grand Prix 1980, joik ved åpningen av OL på Lillehammer i 1994, og internasjonalt anerkjente artister som Nils-Aslak Valkeapää og Mari Boine har gitt joiken en ny og synlig plass både i Norge og internasjonalt.",
     elements: [
@@ -1704,7 +1948,7 @@ const eras = [
     ]
   },
   {
-    id: "filmmusikk", label: "Filmmusikk", years: "1895–i dag",
+    id: "filmmusikk", label: "Filmmusikk", years: "1895–i dag", category: "annet",
     accent: "#6366f1", badgeBg: "rgba(99,102,241,0.12)", badgeText: "#9294f5",
     scoreImage: {
       url: "images/scores/filmmusikk-saintsaens.jpg",
@@ -1804,13 +2048,42 @@ const eras = [
 
 ];
 
+const CATEGORIES = [
+  { id: "klassisk", label: "Klassisk", accent: "#9d7aff" },
+  { id: "jazz", label: "Jazz", accent: "#f59e0b" },
+  { id: "rock", label: "Rock", accent: "#ef4444" },
+  { id: "annet", label: "Andre tradisjoner", accent: "#a67c52" }
+];
+
 let activeIdx = 0;
 let activeComposer = null;
+let activeCategory = eras[0].category;
+
+function renderCategoryNav() {
+  const nav = document.getElementById('category-nav');
+  nav.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'category-tab' + (cat.id === activeCategory ? ' active' : '');
+    btn.textContent = cat.label;
+    if (cat.id === activeCategory) { btn.style.borderColor = cat.accent; btn.style.color = cat.accent; }
+    btn.onclick = () => {
+      if (activeCategory === cat.id) return;
+      activeCategory = cat.id;
+      const firstIdx = eras.findIndex(e => e.category === cat.id);
+      activeIdx = firstIdx >= 0 ? firstIdx : 0;
+      activeComposer = null;
+      renderCategoryNav(); renderNav(); renderMain();
+    };
+    nav.appendChild(btn);
+  });
+}
 
 function renderNav() {
   const nav = document.getElementById('era-nav');
   nav.innerHTML = '';
   eras.forEach((era, i) => {
+    if (era.category !== activeCategory) return;
     const btn = document.createElement('button');
     btn.className = 'era-tab' + (i === activeIdx ? ' active' : '');
     btn.textContent = era.label;
@@ -2299,6 +2572,7 @@ window.toggleTTS = function() {
   if (btn) { btn.textContent = '■ Stopp'; btn.classList.add('reading'); }
 };
 
+renderCategoryNav();
 renderNav();
 renderMain();
 </script>
