@@ -47,6 +47,12 @@
   .score-image .score-caption a { color: var(--muted); text-decoration: none; flex-shrink: 0; }
   .score-image .score-caption a:hover { color: var(--text); text-decoration: underline; }
 
+  .elements-box { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.5rem; }
+  .elements-box .elements-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--faint); margin-bottom: 14px; }
+  .elements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px 20px; }
+  .element-item .el-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .element-item .el-text { font-size: 13px; color: var(--muted); line-height: 1.5; font-weight: 300; }
+
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem; }
   @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
   .info-block { background: var(--card); border: 0.5px solid var(--border); border-radius: 10px; padding: 1.1rem 1.2rem; }
@@ -348,6 +354,14 @@ const eras = [
       caption: "«Dies irae» — middelaldersk sekvensmelodi, her i moderne, lesbar kvadratnotasjon",
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Dies_irae_-_Liber_Usualis.png"
     },
+    elements: [
+      { label: "Rytmikk", text: "Fri rytmikk uten fast puls i gregoriansk sang — følger språkets naturlige rytme. Fra 1200-tallet: modalrytmikk (faste, gjentatte rytmemønstre) i flerstemt musikk." },
+      { label: "Melodikk", text: "Trinnvis, syllabisk eller melismatisk melodikk innenfor kirketoneartene, med begrenset toneomfang." },
+      { label: "Harmonikk", text: "I praksis ingen harmonikk før organum (ca. 900), da parallelle kvarter/kvinter oppstår. Ingen dur/moll." },
+      { label: "Klang", text: "Enstemmig mannssang uten instrumenter i kirken; verdslig musikk med harpe, fløyte og fiedel." },
+      { label: "Dynamikk", text: "Ingen notert dynamikk — jevn klangstyrke gjennom hele verket." },
+      { label: "Form", text: "Fri, tekstbundet form; sekvenser i kirkemusikken og strofisk form i verdslig sang." }
+    ],
     styleTracks: [
       { label: "Gregoriansk sang — stiltrekk", items: [
         "Enstemmig (monofon), mannlig sang uten instrumenter",
@@ -441,6 +455,14 @@ const eras = [
       caption: "Palestrina — Missa Papae Marcelli, Kyrie: renessansens vokalpolyfoni i notebildet",
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Palestrina_missa_papae_macelli_kyrie.PNG"
     },
+    elements: [
+      { label: "Rytmikk", text: "Jevn, rolig puls uten sterke aksenter — stemmene flyter fritt inn og ut av hverandre." },
+      { label: "Melodikk", text: "Trinnvis, modal melodikk der imitasjon mellom stemmene skaper sammenheng." },
+      { label: "Harmonikk", text: "Treklangsbasert, men fortsatt modal — ikke funksjonell dur/moll-harmonikk." },
+      { label: "Klang", text: "Ren vokalklang (a cappella-idealet); mot slutten av perioden også egne instrumentalensembler." },
+      { label: "Dynamikk", text: "Jevn dynamikk — ingen store, markerte kontraster." },
+      { label: "Form", text: "Imitativ polyfoni (poengimitasjon), messeform og den friere madrigalformen." }
+    ],
     styleTracks: [
       { label: "Musikalske stiltrekk", items: [
         "Vokalpolyfoni — det sentrale stilidealet",
@@ -520,6 +542,14 @@ const eras = [
       caption: "J.S. Bach — Toccata og fuge i d-moll, BWV 565: den berømte åpningen i lesbar notasjon",
       sourceUrl: "https://commons.wikimedia.org/wiki/File:BachToccataAndFugueInDMinorOpening.png"
     },
+    elements: [
+      { label: "Rytmikk", text: "Fast, drivende «motorisk» puls, særlig i concerti; friere rytmikk i resitativ." },
+      { label: "Melodikk", text: "Lange, ornamenterte melodilinjer bygget på sekvenser (samme motiv gjentatt på nye tonetrinn)." },
+      { label: "Harmonikk", text: "Dur/moll-tonaliteten etableres fullt ut; generalbassen styrer akkordene under melodien." },
+      { label: "Klang", text: "Cembalo/orgel og strykere sentralt; tydelig kontrast mellom solist(er) og tutti." },
+      { label: "Dynamikk", text: "Terrassedynamikk — brå skift mellom sterkt og svakt, ikke gradvis crescendo/diminuendo." },
+      { label: "Form", text: "Fuge, ritornellform i konserten, dacapo-arie i opera, dansesuiten." }
+    ],
     styleTracks: [
       { label: "Musikalske stiltrekk", items: [
         "Generalbass (basso continuo): akkompagnerende basslinje med besifring (tall over bassnotene angir akkorder)",
@@ -616,6 +646,14 @@ const eras = [
       caption: "Beethoven — 5. symfoni: det berømte skjebnemotivet som åpner verket, i lesbar notasjon",
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Beethoven_symphony_5_opening.png"
     },
+    elements: [
+      { label: "Rytmikk", text: "Klar, regelmessig puls; periodisk frasering i symmetriske, lett gjenkjennelige mønstre." },
+      { label: "Melodikk", text: "Syngbar, symmetrisk melodikk i korte fraser — forsetning og ettersetning som «spørsmål og svar»." },
+      { label: "Harmonikk", text: "Klar funksjonsharmonikk (tonika–subdominant–dominant) med tydelig toneartsforankring." },
+      { label: "Klang", text: "Voksende, homogent orkester; klarinetten kommer inn som fast orkesterinstrument." },
+      { label: "Dynamikk", text: "Gradvis crescendo og diminuendo avløser barokkens brå terrassedynamikk." },
+      { label: "Form", text: "Sonatesatsform, symmetrisk firesatsig symfoni, menuett og trio." }
+    ],
     styleTracks: [
       { label: "Klassiske stiltrekk", items: [
         "Homofon tekstur: melodi + akkompagnement (ikke kontrapunkt som standard)",
@@ -700,6 +738,14 @@ const eras = [
       caption: "Chopin — Nocturne op. 9 nr. 2: åpningen, trykt notutgave fra 1913",
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Nocturne_-_op._9_n°_2_-_mi_b%C3%A9mol_majeur_-_piano_-_par_Fr._Chopin_-_btv1b9068992s_(05_of_14).jpg"
     },
+    elements: [
+      { label: "Rytmikk", text: "Rubato — fri, elastisk tempobehandling der utøveren fremskynder og bremser for uttrykkets skyld." },
+      { label: "Melodikk", text: "Lange, lidenskapelige melodiske spenn med rik kromatikk." },
+      { label: "Harmonikk", text: "Utvidet kromatikk og fjerne modulasjoner; tonaliteten nærmer seg oppløsning mot slutten av perioden (Wagner)." },
+      { label: "Klang", text: "Store orkestre og nye instrumenter (tuba, saksofon, wagnertuba) gir rikere klangfarge." },
+      { label: "Dynamikk", text: "Ekstreme kontraster — fra ppp til fff, ofte innenfor samme verk." },
+      { label: "Form", text: "Frie former: symfonisk dikt, énsatsige karakterstykker, lied-syklus." }
+    ],
     styleTracks: [
       { label: "Romantiske temaer og idealer", items: [
         "Det uoppnåelige, lengsel og drøm",
@@ -814,6 +860,14 @@ const eras = [
       caption: "Debussy — «Voiles» (Préludes, bok I): heltoneskalaens svevende klang i notebildet",
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Debussy_Voiles,_Preludes,_Book_I,_no._2,_mm._1-4.png"
     },
+    elements: [
+      { label: "Rytmikk", text: "Flytende, ofte uklar puls — rytmen tones ned til fordel for klang og atmosfære." },
+      { label: "Melodikk", text: "Korte, svevende motiver heller enn lange melodilinjer; heltone- og pentaton skala." },
+      { label: "Harmonikk", text: "Akkorder brukt som klangfarge, ikke funksjon — parallelle akkordrekker og uoppløste dissonanser." },
+      { label: "Klang", text: "Fargerik, transparent orkestrering (fløyte, harpe, dempede strykere) — klang som hovedelement." },
+      { label: "Dynamikk", text: "Stort sett dempet og nyansert — sjelden ekstreme kontraster." },
+      { label: "Form", text: "Løs, assosiativ form — ofte ettbevegelses stemningsbilder uten klassisk temautvikling." }
+    ],
     styleTracks: [
       { label: "Musikalske stiltrekk", items: [
         "Klangfarge og atmosfære viktigere enn melodi og tradisjonell form",
@@ -880,6 +934,14 @@ const eras = [
       caption: "Schoenberg — Klavierstücke op. 11 nr. 1: et av de aller første atonale verkene",
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Schoenberg_-_Klavierstucke,_Op._11,_No._1_atonal.png"
     },
+    elements: [
+      { label: "Rytmikk", text: "Uregelmessige taktarter og polyrytmikk (Stravinskij); brutal, hamrende aksentuering." },
+      { label: "Melodikk", text: "Atonal eller tolvtonebasert melodikk uten tonalt senter; folkemusikkinspirert modalitet hos Bartók." },
+      { label: "Harmonikk", text: "Atonalitet, tolvtoneteknikk og polytonalitet — tradisjonell dur/moll-harmonikk forlates." },
+      { label: "Klang", text: "Nye klanger: perkusjon i fokus, elektroakustiske instrumenter, støy som musikalsk materiale." },
+      { label: "Dynamikk", text: "Ekstreme, brå kontraster mellom det nesten uhørbare og det brutalt kraftfulle." },
+      { label: "Form", text: "Nye eller gjenbrukte former — neoklassisk formspråk side om side med frie, eksperimentelle strukturer." }
+    ],
     styleTracks: [
       { label: "Modernistiske retninger", items: [
         "Atonalisme: ingen tonalt sentrum — alle toner likestilles",
@@ -1020,6 +1082,14 @@ const eras = [
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Maple_Leaf_Rag_1st_ed_2.jpg"
     },
     summary: "Jazz oppsto i New Orleans rundt 1900 som en revolusjonerende blanding av afroamerikanske tradisjoner — arbeidssanger, spirituals, blues og call-and-response — og europeisk harmonikk, marsjmusikk og janitsjarband. Ragtime (Scott Joplin) og blues (Robert Johnson, Bessie Smith) la det harmoniske og rytmiske grunnlaget jazzen improviserer over. Improvisasjonen er jazzens hjerte: solisten skaper musikken der og da, i sanntid, over et harmonisk skjema. Fra New Orleans spredte jazzen seg nordover med «den store migrasjonen» — Chicago og New York ble nye sentra, og med Louis Armstrong gikk jazzen fra kollektiv improvisasjon til solistens primat. Swing-epoken på 1930–40-tallet med Ellington, Basie og Benny Goodman tok jazz til massepublikummet med de store storbandene. Bebop på 1940-tallet (Charlie Parker, Dizzy Gillespie) tok jazzen tilbake til det eksperimentelle: raskere tempi og mer komplekse akkordprogresjoner. Cool jazz og hardbop på 1950-tallet balanserte mellom ro og intensitet, mens modal jazz (Miles Davis, Kind of Blue 1959; John Coltrane) frigjorde improvisasjonen fra raske akkordskifter og lot musikerne hvile på skalaer. Free jazz brøt med jazzens konvensjoner på 1960-tallet, og fusion (Miles Davis, Bitches Brew) åpnet mot elektronikk og rock på 1970-tallet. Fra samme tiår vokste det også fram en distinkt norsk og europeisk jazzscene, med saksofonisten Jan Garbarek og plateselskapet ECM i spissen — en kammermusikalsk, klangbevisst jazzestetikk med innslag av folkemusikk.",
+    elements: [
+      { label: "Rytmikk", text: "Synkopering og swing — en triolpreget, «groovy» puls der aksentene forskyves fra sterke til svake taktslag." },
+      { label: "Melodikk", text: "Improvisert melodikk over et akkordskjema, med blånoter (senkede tersser og septimer)." },
+      { label: "Harmonikk", text: "Utvidede akkorder (septim, none, tretten), bluesskjema, og raske akkordskifter i bebop." },
+      { label: "Klang", text: "Saksofon, trompet, piano, kontrabass og trommer — hver musikers individuelle klang er viktig." },
+      { label: "Dynamikk", text: "Varierer sterkt med stil — fra intime cool jazz-klanger til kraftfulle storbandfortissimo." },
+      { label: "Form", text: "12-takters blues og 32-takters AABA-form: tema → improvisasjon over skjemaet → tema." }
+    ],
     styleTracks: [
       { label: "Jazzens kjennetegn", items: [
         "Improvisasjon — solisten skaper melodien der og da over et akkordskjema",
@@ -1160,6 +1230,14 @@ const eras = [
       sourceUrl: "https://commons.wikimedia.org/wiki/File:Twelve_bar_blues_in_C.png"
     },
     summary: "Rock'n'roll vokste frem på 1950-tallet som et kulturelt jordskjelv: ungdommen fikk sin egen musikk, kroppen ble del av fremføringen, og generasjonskløften ble synlig for første gang i historien. Chuck Berry, Elvis Presley og Little Richard kombinerte afroamerikansk rhythm and blues med hvit country og skapte noe som sjokkerte foreldre og fascinerte ungdom verden over. Samtidig utviklet afroamerikansk musikk seg videre i egne spor: gospel og R&B smeltet sammen til soul (Ray Charles, Aretha Franklin, James Brown), og plateselskapet Motown i Detroit skapte en dansbar, kommersielt vellykket «svart popmusikk» med grupper som The Supremes. Fra Storbritannia kom «the British Invasion» med The Beatles, Rolling Stones, The Who og The Kinks — grupper som tok amerikansk rhythm and blues og speilet den tilbake med ny energi. The Beatles brakte rocken til en ny dimensjon: de brukte studioet som komposisjonsinstrument og kombinerte populær appell med kunstnerisk ambisjon, mens Bob Dylan ga teksten en litterær og politisk tyngde den aldri hadde hatt i populærmusikken. Rundt 1967 ble rocken til «samtidsmusikk» — albumet ble et kunstnerisk uttrykk i seg selv, og psykedelisk rock (Jimi Hendrix, Pink Floyd) utforsket bevissthetsutvidende lyd med nye studioeffekter og elektroniske instrumenter som Moog-synthesizeren. Derfra forgrenet rocken seg videre til hard rock (Led Zeppelin, Deep Purple), progrock (Pink Floyd, Yes, King Crimson) og country rock (The Byrds, Eagles), før punk (Sex Pistols, The Clash, Ramones) rundt 1976–77 svarte med et rått, tilbake-til-røttene opprør mot alt det utsvevende.",
+    elements: [
+      { label: "Rytmikk", text: "Sterk backbeat (trommen slår tydelig på 2. og 4. taktslag) over en rett 4/4-puls." },
+      { label: "Melodikk", text: "Enkel, syngbar melodikk, ofte hentet fra bluesskalaen." },
+      { label: "Harmonikk", text: "Enkel I–IV–V-harmonikk fra det tolvtaktede bluesskjemaet." },
+      { label: "Klang", text: "Elektrisk gitar, bass og trommesett; forvrengning (distortion) blir en egen klangfarge." },
+      { label: "Dynamikk", text: "Gjennomgående høyt lydnivå — forsterket, elektrisk musikk beregnet på store rom." },
+      { label: "Form", text: "Vers–refreng-form, ofte med et instrumentalt mellomspill (solo)." }
+    ],
     styleTracks: [
       { label: "Rock'n'rollens kjennetegn", items: [
         "Røtter i rhythm and blues, gospel og country — afroamerikansk musiktradisjon",
@@ -1302,6 +1380,14 @@ const eras = [
     id: "contemporary", label: "Samtid", years: "1945–i dag",
     accent: "#5ecf4a", badgeBg: "rgba(94,207,74,0.10)", badgeText: "#7ddc64",
     summary: "Etter 1945 eksploderte musikken i et mangfold uten historisk sidestykke. Avantgarden (Boulez, Stockhausen, Messiaen) drev serialismen til ytterpunktet — alle musikalske parametere ble styrt av matematiske rekker — mens John Cage utforsket det motsatte ytterpunktet med tilfeldighetsmusikk (aleatorikk) og et preparert piano. Den polske klangflateskolen (Ligeti, Penderecki, Xenakis) lot tette klangmasser og «lydskyer» erstatte tradisjonell melodi og harmoni. Som motreaksjon på kompleksiteten vokste minimalismen frem i USA på 1960-tallet: Steve Reich, Philip Glass og Terry Riley skapte musikk av repetitive, gradvis endrende mønstre med hypnotisk virkning. Elektronisk musikk åpnet for helt nye klanger — fra tidlige båndstudioopptak (musique concrète, Stockhausens elektroniske verk) til synthesizere, samplere og til slutt datamaskinen som primært komposisjonsverktøy; nordmannen Arne Nordheim ble en internasjonal pioner på feltet. Arvo Pärt, John Tavener og Sofia Gubaidulina skapte en ny spiritualitet i musikken — enkel, meditativ og dypt inntrykksrik. Fra 1970-tallet fulgte postmodernisme og stilblanding, der sitater og elementer fra ulike sjangre og epoker sidestilles fritt — en tendens som har fortsatt inn på 2000-tallet med retninger som gjerne kalles nyromantikk, polystilisme og «indie-klassisk». I populærmusikken fulgte punk, synth-pop, hip-hop og elektronisk dansmusikk hverandre i rask rekkefølge fra 1970-tallet. Globaliseringen brakte musikk fra hele verden inn i lytterens bevissthet — afrobeat, reggae, verdensmusikk og mange andre strømmer smelter stadig mer sammen med vestlig kunstmusikk og populærmusikk.",
+    elements: [
+      { label: "Rytmikk", text: "Spenner fra streng seriell kontroll og fri aleatorisk rytmikk til minimalismens repetitive, hypnotiske puls." },
+      { label: "Melodikk", text: "Fra fravær av tradisjonell melodi (klangflater) til enkle, gradvis endrede mønstre (minimalisme)." },
+      { label: "Harmonikk", text: "Spenner fra total atonalitet (serialisme) til enkel, konsonant harmonikk (ny enkelhet, Pärt)." },
+      { label: "Klang", text: "Elektronisk og elektroakustisk klang sidestilles med akustiske instrumenter og preparert piano." },
+      { label: "Dynamikk", text: "Ytterpunkter — fra nesten total stillhet (Cage) til massive, klangflate-baserte fortissimo." },
+      { label: "Form", text: "Åpne, prosessbaserte former eller strengt matematisk kontrollerte strukturer." }
+    ],
     styleTracks: [
       { label: "Stilretninger etter 1945", items: [
         "Serialisme: strengt kontrollert komposisjon (Boulez, Stockhausen, Messiaen)",
@@ -1435,6 +1521,14 @@ const eras = [
     id: "folkemusikk", label: "Folkemusikk", years: "ca. 1200–i dag",
     accent: "#a67c52", badgeBg: "rgba(166,124,82,0.12)", badgeText: "#c9a476",
     summary: "Norsk folkemusikk er en muntlig overlevert tradisjon som strekker seg fra middelalderen og fram til i dag, båret videre fra spelemann til spelemann og fra kvedar til kvedar uten notasjon. Den deles gjerne i en instrumental og en vokal tradisjon. Den instrumentale tradisjonen er først og fremst dansemusikk: bygdedansslåttene omfatter både faste taktdanser som gangar, halling og rull, og den mer særnorske, ujevnt taktbetonte springar/pols-tradisjonen, i tillegg til nyere runddanser som vals og reinlender. Hovedinstrumentet er hardingfelen — en fiolinvariant med understrenger som klinger med — men også vanlig fele, munnharpe, langeleik og seterinstrumenter som lur, bukkehorn og seljefløyte har lange tradisjoner. Den vokale tradisjonen omfatter kveding (folkelig sang med ornamentikk og pressa stemme), stev (korte, rimede dikt i faste versemål: gamlestev, nystev og slåttestev), episke folkeviser og ballader — der «Draumkvedet», nedtegnet i Telemark rundt 1850, står i en særstilling som norsk middelalderdiktnings fremste visjonsdikt — samt religiøse folketoner, arbeidssanger og skillingsviser. Folkemusikken hadde en sentral sosial funksjon ved bryllup, marked og gårdsarbeid, men ble på 1800-tallet også utsatt for religiøs fordømmelse — mange feler ble brent på såkalte «felebål» fordi de ble knyttet til dans og synd. Nasjonalromantikken løftet samtidig hardingfela til nasjonalsymbol, med spelemenn som Myllarguten som folkehelter. Etter en nedgangsperiode kom en sterk folkemusikkrevival fra 1970-tallet, og fra 1980–90-tallet har arrangert folkemusikk og fusion — der tradisjonelle slåtter og kvad møter jazz, rock og verdensmusikk — gitt tradisjonen nytt publikum, blant annet gjennom samarbeidet mellom kvedaren Agnes Buen Garnås og saksofonisten Jan Garbarek.",
+    elements: [
+      { label: "Rytmikk", text: "Asymmetrisk, «haltende» taktfølelse i springar/pols; jevn, fast takt i gangar og halling." },
+      { label: "Melodikk", text: "Modale skalaer med variable intervaller (høy sekst, hevet kvart) og rik ornamentikk." },
+      { label: "Harmonikk", text: "I hovedsak monofon eller bordunbasert — ikke vestlig funksjonsharmonikk." },
+      { label: "Klang", text: "Hardingfele, fele, munnharpe, langeleik og seterinstrumenter; kveding som vokalklang." },
+      { label: "Dynamikk", text: "Naturlig, umikset klang — ingen notert dynamikk i tradisjonell forstand." },
+      { label: "Form", text: "Kort, repetert slåtteform (motiv A/B) i det instrumentale; strofisk form i stev og viser." }
+    ],
     styleTracks: [
       { label: "Musikalske kjennetegn", items: [
         "Muntlig tradisjon — læres og overføres fra utøver til utøver uten notasjon",
@@ -1520,6 +1614,14 @@ const eras = [
     id: "samisk", label: "Samisk musikk", years: "Uviss alder – i dag",
     accent: "#eab308", badgeBg: "rgba(234,179,8,0.12)", badgeText: "#fbd34d",
     summary: "Joik (nordsamisk: luohti/vuolle) er den samiske folkemusikktradisjonen og regnes som en av Europas eldste sammenhengende vokaltradisjoner — hvor gammel den er, er ukjent, men de første skriftlige nedtegnelsene av joiketekster er fra 1670-tallet. Joik skiller seg grunnleggende fra vestlig sangtradisjon: man sier at man joiker en person, et dyr eller et sted — ikke om det. Melodien er selve identiteten til det som joikes, og en egen personjoik regnes som en ærefull gave. Joiken deles gjerne i tre hovedkategorier: rituelle joiker, knyttet til sjamanen (noaidien) og runebommen og brukt for å komme i kontakt med åndeverdenen; fortellende joiker, lange episke joikedikt som «solsønnen» — samenes nasjonale epos; og personifiserte joiker om personer, dyr og steder. Musikalsk er joik ofte bygget på en enkel, firetaktig form med pentatone skalaer, halvhøye intervaller og en presset, «trang» klang, gjerne sunget med stavelsestekst (lo, na, go) i stedet for ord. Det finnes betydelige regionale forskjeller — sørsamisk, lulesamisk, nordsamisk, sjøsamisk og skoltesamisk joik har alle sine egne stiltrekk. Fra 1600-tallet ble joik og runebomme fordømt av misjonen som djevelens verk; runebommer ble brent, og bare tre er bevart i Norge i dag. Fornorskningspolitikken fortsatte å undertrykke samisk språk og kultur langt inn på 1900-tallet, og i Kautokeino ble joik direkte forbudt i skolen fra 1953 til forbudet ble opphevet i 1993. Samtidig har joiken hatt en sterk renessanse: «Samid ædnan» i Melodi Grand Prix 1980, joik ved åpningen av OL på Lillehammer i 1994, og internasjonalt anerkjente artister som Nils-Aslak Valkeapää og Mari Boine har gitt joiken en ny og synlig plass både i Norge og internasjonalt.",
+    elements: [
+      { label: "Rytmikk", text: "Fri, ofte asymmetrisk taktfølelse tilpasset teksten og pusten til utøveren." },
+      { label: "Melodikk", text: "Pentatone skalaer, ofte med bare 3–4 toner, og halvhøye intervaller." },
+      { label: "Harmonikk", text: "Ingen — joik er rendyrket monofoni, uten akkompagnement i tradisjonell form." },
+      { label: "Klang", text: "Presset, «trang» stemmeklang med liten munnåpning; runebomme i den rituelle joiken." },
+      { label: "Dynamikk", text: "Ingen notert dynamikk — intensiteten ligger i klangen og framføringen, ikke i styrkegrader." },
+      { label: "Form", text: "Enkel, ofte firetaktig form med udefinert lengde — kan gjentas og varieres fritt." }
+    ],
     styleTracks: [
       { label: "Musikalske kjennetegn", items: [
         "Man joiker en person, et dyr eller et sted — ikke om det; melodien er selve identiteten",
@@ -1610,6 +1712,14 @@ const eras = [
       sourceUrl: "https://imslp.org/wiki/L'assassinat_du_duc_de_Guise,_Op.128_(Saint-Sa%C3%ABns,_Camille)"
     },
     summary: "Filmmusikken har fulgt filmmediet fra stumfilmens dager, da pianister eller små orkestre spilte levende musikk i kinosalen — dels for å dekke over støyen fra fremviserapparatet, dels fordi musikk ga det todimensjonale, stumme bildet en emosjonell dimensjon det ellers manglet. Musikkviteren Claudia Gorbman har analysert den klassiske Hollywood-filmmusikken fra 1930- og 40-tallet gjennom sju prinsipper: musikken skal være usynlig og «uhørlig» — underordnet fortellingen snarere enn noe publikum er kommet for å oppleve i seg selv — samtidig som den angir følelser, gir fortellermessige vink om tid, sted og synsvinkel, skaper kontinuitet mellom scener og enhet gjennom gjentatte temaer (ledemotiv). Musikken skiller seg mellom diegetisk (kilden er en del av filmens univers, som et orkester vi ser spille i bildet) og ikke-diegetisk («bakgrunnsmusikk» uten synlig kilde). Den stilistiske kilden for klassisk filmmusikk var senromantisk orkestermusikk (Wagner, Richard Strauss) med Wagners ledemotivteknikk som viktig forbilde, men også jazz, populærsang og etter hvert musique concrète og elektroniske klanger har vært sentrale kilder. Fra 1950-tallet nedtones den symfoniske musikken til fordel for jazz og fremmedartede elektroniske klanger, og på 1960–70-tallet bryter rock og pop med Gorbmans prinsipper: musikken i filmer som Easy Rider (1969) er tvert imot markant, iørefallende og styrende for billedforløpet — en slags «anti-Gorbman»-effekt. 1980-tallet bringer en klassisk, ny-symfonisk renessanse (Star Wars), mens 1990- og 2000-tallet i stor grad blander og velger fritt mellom disse tradisjonene. Lyddesigneren Walter Murch har vist hvordan skillet mellom musikk, tale og lydeffekter i moderne film er langt mer flytende enn den klassiske teorien antok — i filmer som Apocalypse Now (1979) smelter helikopterlyd, skudd og Wagners «Valkyrieridtet» sammen til én sammenhengende lydopplevelse. Intertekstuelle referanser til andre kunstverk — musikk, malerier, litteratur — er et annet virkemiddel som har blitt stadig vanligere i nyere filmmusikk.",
+    elements: [
+      { label: "Rytmikk", text: "Tilpasset billedforløpet — musikkens tempo og puls følger scenens handling og klipperytme." },
+      { label: "Melodikk", text: "Ledemotiv knyttet til personer, steder eller idéer — gjenkjennelige temaer som vender tilbake." },
+      { label: "Harmonikk", text: "Spenner fra senromantisk funksjonsharmonikk (klassisk Hollywood) til atonale og elektroniske klanger." },
+      { label: "Klang", text: "Symfoniorkester i klassisk stil, men også jazz, rock og elektronikk avhengig av tiår og sjanger." },
+      { label: "Dynamikk", text: "Ofte underordnet dialogen og diskret (Gorbmans idealer), men kan også dominere bevisst («anti-Gorbman»)." },
+      { label: "Form", text: "Styrt av filmens dramaturgi og billedforløp — ikke en selvstendig musikalsk form." }
+    ],
     styleTracks: [
       { label: "Sentrale begreper", items: [
         "Diegetisk musikk: kilden er en synlig eller usynlig del av filmens univers (f.eks. et orkester i bildet)",
@@ -1770,6 +1880,17 @@ function renderMain() {
           <a href="${era.scoreImage.sourceUrl}" target="_blank" rel="noopener">Kilde: Wikimedia Commons ↗</a>
         </figcaption>
       </figure>` : ''}
+      ${era.elements ? `
+      <div class="elements-box">
+        <div class="elements-title">Musikkens elementer i ${era.label.toLowerCase()}</div>
+        <div class="elements-grid">
+          ${era.elements.map(el => `
+          <div class="element-item">
+            <div class="el-label" style="color:${era.accent}">${el.label}</div>
+            <div class="el-text">${el.text}</div>
+          </div>`).join('')}
+        </div>
+      </div>` : ''}
     </div>
     <div class="two-col">${infoCols}</div>
     <hr class="section-divider">
