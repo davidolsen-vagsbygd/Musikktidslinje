@@ -150,6 +150,7 @@
   .qz-restart:hover { background: var(--hover-bg); }
 
   .sidebar {
+    display: none;
     position: fixed;
     left: 0;
     top: 50%;
@@ -165,6 +166,7 @@
     overflow-y: auto;
     scrollbar-width: none;
   }
+  .sidebar.open { display: block; }
   .sidebar::-webkit-scrollbar { display: none; }
   .sidebar-title {
     font-size: 10px;
@@ -216,7 +218,7 @@
   .sidebar-folder:hover { border-color: var(--border-hover); color: var(--text); }
 
   .sidebar-toggle-btn {
-    display: none;
+    display: flex;
     position: fixed;
     left: 16px;
     bottom: 16px;
@@ -236,7 +238,7 @@
   }
   .sidebar-toggle-btn:hover { color: var(--text); border-color: var(--border-hover); }
   .sidebar-close {
-    display: none;
+    display: flex;
     width: 26px; height: 26px; border-radius: 50%;
     align-items: center; justify-content: center;
     background: none; border: 0.5px solid var(--border);
@@ -252,9 +254,7 @@
   }
 
   @media (max-width: 1280px) {
-    .sidebar-toggle-btn { display: flex; }
     .sidebar {
-      display: none;
       left: 0; top: 0; transform: none;
       width: min(280px, 85vw);
       max-height: 100vh; height: 100vh;
@@ -263,9 +263,7 @@
       box-shadow: 0 0 40px rgba(0,0,0,0.35);
       padding: 1.2rem;
     }
-    .sidebar.open { display: block; }
     .sidebar-backdrop.open { display: block; }
-    .sidebar-close { display: flex; }
   }
   @keyframes tts-pulse { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
   #tts-btn.reading { animation: tts-pulse 1.5s ease-in-out infinite; color: var(--text); border-color: var(--border-hover); }
@@ -2527,9 +2525,16 @@ window.switchView = function(view) {
 };
 
 window.toggleSidebar = function() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebar-backdrop').classList.toggle('open');
+  const isOpen = document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-backdrop').classList.toggle('open', isOpen);
+  localStorage.setItem('sidebarOpen', isOpen ? '1' : '0');
 };
+
+(function initSidebar() {
+  const saved = localStorage.getItem('sidebarOpen');
+  const shouldOpen = saved !== null ? saved === '1' : window.innerWidth > 1280;
+  if (shouldOpen) document.getElementById('sidebar').classList.add('open');
+})();
 
 window.toggleTheme = function() {
   const html = document.documentElement;
